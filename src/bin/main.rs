@@ -2,6 +2,10 @@ extern crate termion;
 use termion::{async_stdin, clear, color, cursor, style};
 use termion::raw::IntoRawMode;
 use std::io::{Read, Write, stdout, stdin};
+use futures::{join, task};
+use futures::stream::{FuturesUnordered, StreamExt};
+use std::time::{Duration, Instant};
+use std::thread;
 use nonsense; // That is the name of the library of this program
 mod graphics {
 	pub const HORIZONTAL_WALL: &'static str = "═"; // Public constant. The &'static (I think) tells the program that this will live until the end.
@@ -56,11 +60,11 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 
 	fn draw_character(&mut self, chr: &str, x: u16, y: u16) {
 		write!(self.stdout, "{}{}{}{}", 
-			termion::color::Bg(color::Rgb(5,25,25)),
-			cursor::Goto(x, y as u16),
-			chr,
-			termion::color::Bg(color::Reset))
-			.unwrap();
+		termion::color::Bg(color::Rgb(5,25,25)),
+		cursor::Goto(x, y as u16),
+		chr,
+		termion::color::Bg(color::Reset))
+		.unwrap();
 	}
 
 	fn draw_flower(&mut self, x: u16, y:u16) {
@@ -160,6 +164,7 @@ fn init_ui(width: usize, height: usize, random: usize) {
 			y: (height / 2) as u16
 		}
 	};
+
 	ui.reset();
 	ui.start();
 }
