@@ -14,8 +14,7 @@ mod graphics {
     pub const TOP_RIGHT_CORNER: &'static str = "╗";
     pub const BOTTOM_LEFT_CORNER: &'static str = "╚";
     pub const BOTTOM_RIGHT_CORNER: &'static str = "╝";
-	pub const PLAYER: &'static str = "@";
-	pub const FLOWER: &'static str = "x";
+	pub const PLAYER: char = '@';
 }
 
 use self::graphics::*;
@@ -56,28 +55,24 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 	}
 
 	fn draw_player(&mut self) {
-		self.draw_character(PLAYER, self.player.x, self.player.y);
+		self.draw_character(PLAYER as char, self.player.x, self.player.y);
 	}
 
-	fn draw_character(&mut self, chr: &str, x: u16, y: u16) {
+	fn draw_map(&mut self) {
+		for y in 0..self.height {
+			for x in 0..self.width {
+				self.draw_character(self.flower.map[y][x], (x + 1) as u16, (y + 1) as u16);
+			}
+		}
+	}
+
+	fn draw_character(&mut self, chr: char, x: u16, y: u16) {
 		write!(self.stdout, "{}{}{}{}", 
-		termion::color::Bg(color::Rgb(5,25,25)),
+		termion::color::Bg(color::Rgb(1,5,5)),
 		cursor::Goto(x, y as u16),
 		chr,
 		termion::color::Bg(color::Reset))
 		.unwrap();
-	}
-
-	fn draw_flower(&mut self, x: u16, y:u16) {
-		for i in 0..10 {
-			let flower = nonsense::flower::draw_flower(x, y, i);
-			//println!("{} {} {} {}", flower.0, flower.1, flower.2, flower.3);
-			self.draw_character(&flower.2.to_string(), flower.0 + x, flower.1 + y);
-			if flower.3 == true {
-				return;
-			}
-		}
-		println!("{}", self.flower.map[3][3]);
 	}
 
 	fn draw_horizontal_line(&mut self, chr: &str, x: u16, y: u16, width: u16) {
@@ -103,6 +98,7 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 		}
 	}
 
+	/*
 	fn draw_box(&mut self, x1: u16, y1:u16, x2: u16, y2: u16) {
 		self.draw_character(TOP_LEFT_CORNER, x1, y1);
 		self.draw_horizontal_line(HORIZONTAL_WALL, x1 + 1, y1, x2);
@@ -113,6 +109,7 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 		self.draw_horizontal_line(HORIZONTAL_WALL, x1 + 1, y2, x2);
 		self.draw_character(BOTTOM_RIGHT_CORNER, x2, y2);
 	}
+	*/
 
 	fn reset(&mut self) {
 		let width: u16 = self.width as u16;
@@ -121,9 +118,9 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 			"{}{}{}",
 			termion::clear::All,
 			termion::cursor::Goto(1, 1),
-			termion::color::Fg(color::Cyan))
+			termion::color::Fg(color::Rgb(5,25,25)))
 			.unwrap();
-		self.draw_box(1, 1, width, height);
+		//self.draw_box(1, 1, width, height);
 		self.stdout.flush().unwrap();
 	}
 
@@ -136,16 +133,17 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 
         //self.rand.write_u8(key_bytes[0]);
 		self.clear_player();
+		println!("{}{}", self.width, self.height);
         match key_bytes[0] {
             b'q' => return false,
             b'k' | b'w' => self.player.y -= 1,
             b'j' | b's' => self.player.y += 1,
             b'h' | b'a' => self.player.x -= 1,
             b'l' | b'd' => self.player.x += 1,
-			b'f' => self.draw_flower(self.player.x, self.player.y),
             _ => {},
         }
 		self.draw_player();
+		self.draw_map();
 		true
 	}
 }

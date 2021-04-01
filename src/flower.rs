@@ -2,11 +2,11 @@ use crate::rng;
 
 pub struct Flower {
     pub n: usize,
-    pub map: Vec<Vec<i32>>,
+    pub map: Vec<Vec<char>>,
 }
 
 pub fn init_map(x: usize, y: usize) -> Flower {
-	let mut map = vec![vec![5; x as usize]; y as usize];
+	let mut map = vec![vec!['.'; x as usize]; y as usize];
 	let n = 42;
 	Flower {
 		n,
