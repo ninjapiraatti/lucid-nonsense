@@ -35,7 +35,8 @@ pub struct UI<R, W> {
     /// Standard output.
     stdout: W,
 	random: usize,
-	player: Player
+	player: Player,
+	flower: nonsense::flower::Flower,
 }
 
 impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
@@ -76,6 +77,7 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 				return;
 			}
 		}
+		println!("{}", self.flower.map[3][3]);
 	}
 
 	fn draw_horizontal_line(&mut self, chr: &str, x: u16, y: u16, width: u16) {
@@ -162,9 +164,9 @@ fn init_ui(width: usize, height: usize, random: usize) {
 		player: Player {
 			x: (width / 2) as u16,
 			y: (height / 2) as u16
-		}
+		},
+		flower: nonsense::flower::init_map(width, height),
 	};
-
 	ui.reset();
 	ui.start();
 }
