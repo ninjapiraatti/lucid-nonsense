@@ -1,0 +1,19 @@
+[package]
+name = "lucid-nonsense"
+version = "0.1.0"
+authors = ["Ninjapiraatti <tuoppil@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "nonsense"
+path = "src/lib.rs"
+
+[[bin]]
+name = "lucid-nonsense"
+path = "src/bin/main.rs"
+
+[dependencies]
+lazy_static = "1.4.0"
+termion = "1.5.6"
