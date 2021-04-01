@@ -54,21 +54,24 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 		write!(self.stdout, "{} ", cursor::Goto(self.player.x, self.player.y)).unwrap();
 	}
 
+	/*
 	fn draw_player(&mut self) {
 		self.draw_character(PLAYER as char, self.player.x, self.player.y);
 	}
+	*/
 
 	fn draw_map(&mut self) {
 		for y in 0..self.height {
 			for x in 0..self.width {
-				self.draw_character(self.flower.map[y][x], (x + 1) as u16, (y + 1) as u16);
+				self.draw_character(self.flower.map[y][x].ch, self.flower.map[y][x].color, (x + 1) as u16, (y + 1) as u16);
 			}
 		}
 	}
 
-	fn draw_character(&mut self, chr: char, x: u16, y: u16) {
-		write!(self.stdout, "{}{}{}{}", 
-		termion::color::Bg(color::Rgb(1,5,5)),
+	fn draw_character(&mut self, chr: char, color: termion::color::Rgb, x: u16, y: u16) {
+		write!(self.stdout, "{}{}{}{}{}", 
+		termion::color::Fg(color),
+		termion::color::Bg(color::Rgb(1,5,5)), 
 		cursor::Goto(x, y as u16),
 		chr,
 		termion::color::Bg(color::Reset))
@@ -142,7 +145,6 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
             b'l' | b'd' => self.player.x += 1,
             _ => {},
         }
-		self.draw_player();
 		self.draw_map();
 		true
 	}

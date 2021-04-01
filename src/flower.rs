@@ -1,13 +1,23 @@
+//use termion::{color};
 use crate::rng;
+
+#[derive(Clone)]
+pub struct Glyph {
+	pub ch: char,
+	pub color: termion::color::Rgb
+}
 
 pub struct Flower {
     pub n: usize,
-    pub map: Vec<Vec<char>>,
+    pub map: Vec<Vec<Glyph>>,
 }
 
 pub fn init_map(x: usize, y: usize) -> Flower {
-	let mut map = vec![vec!['.'; x as usize]; y as usize];
-	let n = 42;
+	let g = Glyph {ch: '.', color: termion::color::Rgb(15, 15, 15)};
+	let mut map = vec![vec![g; x as usize]; y as usize];
+	map[y / 2][x / 2].ch = 'O';
+	map[y / 2][x / 2].color = termion::color::Rgb(255, 5, 5);
+	let n = 5;
 	Flower {
 		n,
 		map
