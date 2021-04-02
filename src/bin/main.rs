@@ -8,13 +8,11 @@ use std::time::{Duration, Instant};
 use std::thread;
 use nonsense; // That is the name of the library of this program
 mod graphics {
-	pub const HORIZONTAL_WALL: &'static str = "═"; // Public constant. The &'static (I think) tells the program that this will live until the end.
-	pub const VERTICAL_WALL: &'static str = "║";
-	pub const TOP_LEFT_CORNER: &'static str = "╔";
-    pub const TOP_RIGHT_CORNER: &'static str = "╗";
-    pub const BOTTOM_LEFT_CORNER: &'static str = "╚";
-    pub const BOTTOM_RIGHT_CORNER: &'static str = "╝";
-	pub const PLAYER: char = '@';
+	pub const PLAYER: char = '◐';
+}
+
+mod colors {
+	pub const CYAN: termion::color::Rgb = termion::color::Rgb(1, 221, 214); // This can't be right
 }
 
 use self::graphics::*;
@@ -54,11 +52,9 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 		write!(self.stdout, "{} ", cursor::Goto(self.player.x, self.player.y)).unwrap();
 	}
 
-	/*
 	fn draw_player(&mut self) {
-		self.draw_character(PLAYER as char, self.player.x, self.player.y);
+		self.draw_character(PLAYER as char, termion::color::Rgb(20,60,60), self.player.x, self.player.y);
 	}
-	*/
 
 	fn draw_map(&mut self) {
 		for y in 0..self.height {
@@ -78,42 +74,6 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 		.unwrap();
 	}
 
-	fn draw_horizontal_line(&mut self, chr: &str, x: u16, y: u16, width: u16) {
-		//for _ in 0..width { self.stdout.write(chr.as_bytes()).unwrap(); }
-		for i in x..width {
-			write!(self.stdout, "{}{}{}{}", 
-				termion::color::Bg(color::Rgb(5,25,25)), 
-				cursor::Goto(i, y as u16),
-				chr,
-				termion::color::Bg(color::Reset))
-				.unwrap();
-		}
-	}
-
-	fn draw_vertical_line(&mut self, chr: &str, x: u16, y: u16, height: u16) {
-		for i in y..height {
-			write!(self.stdout, "{}{}{}{}", 
-				termion::color::Bg(color::Rgb(5,25,25)), 
-				cursor::Goto(x, i as u16),
-				chr,
-				termion::color::Bg(color::Reset))
-				.unwrap();
-		}
-	}
-
-	/*
-	fn draw_box(&mut self, x1: u16, y1:u16, x2: u16, y2: u16) {
-		self.draw_character(TOP_LEFT_CORNER, x1, y1);
-		self.draw_horizontal_line(HORIZONTAL_WALL, x1 + 1, y1, x2);
-		self.draw_character(TOP_RIGHT_CORNER, x2, y1);
-		self.draw_vertical_line(VERTICAL_WALL, x1, y1 + 1, y2);
-		self.draw_vertical_line(VERTICAL_WALL, x2, y1 + 1, y2);
-		self.draw_character(BOTTOM_LEFT_CORNER, x1, y2);
-		self.draw_horizontal_line(HORIZONTAL_WALL, x1 + 1, y2, x2);
-		self.draw_character(BOTTOM_RIGHT_CORNER, x2, y2);
-	}
-	*/
-
 	fn reset(&mut self) {
 		let width: u16 = self.width as u16;
         let height: u16 = self.height as u16;
@@ -123,7 +83,6 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 			termion::cursor::Goto(1, 1),
 			termion::color::Fg(color::Rgb(5,25,25)))
 			.unwrap();
-		//self.draw_box(1, 1, width, height);
 		self.stdout.flush().unwrap();
 	}
 
@@ -145,7 +104,8 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
             b'l' | b'd' => self.player.x += 1,
             _ => {},
         }
-		self.draw_map();
+		self.draw_map(); // OPTIMIZE. Only draw the cells that change
+		self.draw_player();
 		true
 	}
 }
