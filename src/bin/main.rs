@@ -57,6 +57,7 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 	}
 
 	fn draw_map(&mut self) {
+		nonsense::flower::update_map(&mut self.flower);
 		for y in 0..self.height {
 			for x in 0..self.width {
 				self.draw_character(self.flower.map[y][x].ch, self.flower.map[y][x].color, (x + 1) as u16, (y + 1) as u16);
@@ -136,3 +137,4 @@ fn main() {
 	let size: (u16, u16) = termion::terminal_size().unwrap();
 	init_ui(size.0 as usize, size.1 as usize, 66);
 }
+
