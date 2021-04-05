@@ -1,4 +1,8 @@
 use crate::rng;
+use crate::plants;
+lazy_static::lazy_static! {
+	pub static ref VGA: String = String::from("ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáíóúñÑªº¿⌐¬½¼¡«»░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀αßΓπΣσµτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²■ ☺☻♥♦♣♠•◘○◙♂♀♪♫☼►◄↕‼¶§▬↨↑↓→←∟↔▲▼!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~⌂");
+}
 
 #[derive(Clone, Copy, Debug)]
 pub struct Glyph {
@@ -10,6 +14,7 @@ pub struct Glyph {
 pub struct World {
     pub changes: Vec<(usize, usize)>,
     pub map: Vec<Vec<Glyph>>,
+	pub plants: Vec<plants::Plant>,
 	pub width: usize,
 	pub height: usize, 
 	pub dot: Glyph,
@@ -19,37 +24,30 @@ pub fn init_map(x: usize, y: usize) -> World {
 	let mut dot = Glyph {ch: '.', color: termion::color::Rgb(15, 15, 15)};
 	let mut map = vec![vec![dot; x as usize]; y as usize];
 	let changes = vec![(0, 0)];
+	let plants = vec![];
 	let width = x;
 	let height = y;
 	World {
 		changes,
 		map,
+		plants,
 		width,
 		height,
 		dot
 	}
 }
 
-fn test_animation(world: &mut World) {
-	//let mut numx = rng::RandGen::new(34545);
-	//let mut numy = rng::RandGen::new(43530);
-	let x = rng::rng(40);
-	let y = rng::rng(40);
-	world.changes.push((x, y));
-	world.map[x][y].ch = 'X';
-	world.map[x][y].color = termion::color::Rgb(255, 38, 106);
-}
-
 pub fn update_map(world: &mut World) -> &mut World {
 	world.changes = vec![(0,0)];
 	let y = world.height;
 	let x = world.width;
-	test_animation(world);
+	//plants::test_animation(world);
+	plants::grow_plants(world);
 	world.map[y / 2][x / 2].ch = 'O';
 	world.map[y / 2][x / 2].color = termion::color::Rgb(255, 38, 106);
 	world
 }
-
+/*
 pub fn draw_world(x: u16, y: u16, count: u16) -> (u16, u16, char, bool) {
 	let xf = rng::rng(20) as u16;
 	let yf = rng::rng(20) as u16;
@@ -58,3 +56,4 @@ pub fn draw_world(x: u16, y: u16, count: u16) -> (u16, u16, char, bool) {
 	}
 	return(xf, yf, 'ä', false)
 }
+*/

@@ -6,10 +6,10 @@ use std::time::{Duration, Instant};
 use std::thread;
 use nonsense; // That is the name of the library of this program
 use nonsense::rng;
+use nonsense::plants;
 mod graphics {
 	pub const PLAYER: char = '◐';
 }
-
 mod colors {
 	pub const CYAN: termion::color::Rgb = termion::color::Rgb(1, 221, 214); // This can't be right
 }
@@ -74,15 +74,6 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 		}
 	}
 
-	fn test_draw(&mut self) {
-		let mut index = 0;
-		loop {
-			let test = nonsense::world::draw_world(50, 50, index);
-			index += 1;
-			self.draw_character('X', color::Rgb(0, 150, 150), test.0, test.1);
-		}
-	}
-
 	fn draw_character(&mut self, chr: char, color: termion::color::Rgb, x: u16, y: u16) {
 		write!(self.stdout, "{}{}{}{}{}", 
 		termion::color::Fg(color),
@@ -125,7 +116,7 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
             b'j' | b's' => self.player.y += 1,
             b'h' | b'a' => self.player.x -= 1,
             b'l' | b'd' => self.player.x += 1,
-			b'f' => self.test_draw(),
+			b'f' => plants::plant_plant(self.player.x, self.player.y, 10, &mut self.world),
             _ => {},
         }
 		self.draw_map(); // OPTIMIZE. Only draw the cells that change
