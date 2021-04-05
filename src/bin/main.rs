@@ -117,7 +117,7 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
         self.stdin.read(&mut key_bytes).unwrap();
 		let mut rnd = rng::RandGen::new(self.player.x as usize * 4567);
         //self.rand.write_u8(key_bytes[0]);
-		self.clear_player();
+		//self.clear_player();
 		println!("{}", "Player");
         match key_bytes[0] {
             b'q' => return false,
@@ -131,6 +131,9 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 		self.draw_map(); // OPTIMIZE. Only draw the cells that change
 		self.draw_player();
 		self.draw_debug();
+		let delay = std::time::Duration::from_millis(20);
+		let now = std::time::Instant::now();
+		thread::sleep(delay);
 		true
 	}
 }
@@ -138,8 +141,8 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 fn init_ui(width: usize, height: usize) {
 	let stdout = stdout();
 	let mut stdout = stdout.lock().into_raw_mode().unwrap();
-	let stdin = stdin();
-	let stdin = stdin.lock();
+	let stdin = async_stdin();
+	//let stdin = stdin.lock();
 	let mut ui = UI {
 		width: width,
 		height: height,

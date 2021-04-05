@@ -1,6 +1,6 @@
 use crate::rng;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct Glyph {
 	pub ch: char,
 	pub color: termion::color::Rgb
@@ -12,11 +12,12 @@ pub struct Flower {
     pub map: Vec<Vec<Glyph>>,
 	pub width: usize,
 	pub height: usize, 
+	pub dot: Glyph,
 }
 
 pub fn init_map(x: usize, y: usize) -> Flower {
-	let g = Glyph {ch: '.', color: termion::color::Rgb(15, 15, 15)};
-	let mut map = vec![vec![g; x as usize]; y as usize];
+	let mut dot = Glyph {ch: '.', color: termion::color::Rgb(15, 15, 15)};
+	let mut map = vec![vec![dot; x as usize]; y as usize];
 	let changes = vec![(0, 0)];
 	let width = x;
 	let height = y;
@@ -25,6 +26,7 @@ pub fn init_map(x: usize, y: usize) -> Flower {
 		map,
 		width,
 		height,
+		dot
 	}
 }
 
@@ -39,6 +41,7 @@ fn test_animation(flower: &mut Flower) {
 }
 
 pub fn update_map(flower: &mut Flower) -> &mut Flower {
+	flower.changes = vec![(0,0)];
 	let y = flower.height;
 	let x = flower.width;
 	test_animation(flower);
