@@ -8,7 +8,7 @@ use nonsense; // That is the name of the library of this program
 use nonsense::rng;
 use nonsense::plants;
 mod graphics {
-	pub const PLAYER: char = '◐';
+	pub const PLAYER: char = '🦀';
 }
 mod colors {
 	pub const CYAN: termion::color::Rgb = termion::color::Rgb(1, 221, 214); // This can't be right
@@ -108,8 +108,8 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
         self.stdin.read(&mut key_bytes).unwrap();
 		let mut rnd = rng::RandGen::new(self.player.x as usize * 4567);
         //self.rand.write_u8(key_bytes[0]);
-		//self.clear_player();
-		println!("{}", "Player");
+		self.clear_player();
+		//println!("{}", "Player");
         match key_bytes[0] {
             b'q' => return false,
             b'k' | b'w' => self.player.y -= 1,
@@ -119,7 +119,7 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 			b'f' => plants::plant_plant(self.player.x, self.player.y, 10, &mut self.world),
             _ => {},
         }
-		self.draw_map(); // OPTIMIZE. Only draw the cells that change
+		self.draw_map();
 		self.draw_player();
 		self.draw_debug();
 		let delay = std::time::Duration::from_millis(20);

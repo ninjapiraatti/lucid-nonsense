@@ -10,20 +10,25 @@ pub struct Plant {
 	state: u16, // Also something else than magic number
 }
 
-pub fn test_animation(world: &mut world::World) {
+pub fn animate_world(world: &mut world::World) {
 	//let mut numx = rng::RandGen::new(34545);
 	//let mut numy = rng::RandGen::new(43530);
+	let hue1 = rng::rng(15) as u8;
+	let hue2 = rng::rng(15) as u8;
 	let x = rng::rng(world.width);
 	let y = rng::rng(world.height);
 	let z = rng::rng(world::VGA.chars().count());
-	world.changes.push((x, y));
-	world.map[y][x].ch = world::VGA.chars().nth(z).unwrap();
-	world.map[y][x].color = termion::color::Rgb(255, 38, 106);
+	if world.map[y][x].permissions == 0 {
+		world.changes.push((x, y));
+		world.map[y][x].ch = world::VGA.chars().nth(z).unwrap();
+		world.map[y][x].color = termion::color::Rgb(0, 20 + hue1, 10 + hue2);
+	}
 }
 
-pub fn write_glyph(x: usize, y: usize, glyph: char, world: &mut world::World) {
+pub fn write_glyph(x: usize, y: usize, glyph: char, perms: usize, world: &mut world::World) {
 	world.changes.push((x, y));
 	world.map[y][x].ch = glyph;
+	world.map[y][x].permissions = perms;
 	world.map[y][x].color = termion::color::Rgb(255, 38, 106);
 }
 
@@ -43,7 +48,7 @@ pub fn grow_plants(world: &mut world::World) {
 		let z = rng::rng(world::VGA.chars().count());
 		let glyph = world::VGA.chars().nth(z).unwrap();
 		if world.plants[p].state < world.plants[p].height { // This is hecking stupid
-			write_glyph(world.plants[p].x as usize, (world.plants[p].y - 2 - world.plants[p].state) as usize, glyph, world);
+			write_glyph(world.plants[p].x as usize, (world.plants[p].y - 2 - world.plants[p].state) as usize, glyph, 1, world);
 			world.plants[p].state += 1;
 			println!("{:?}", world.plants[p].state);
 		}

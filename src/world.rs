@@ -7,7 +7,8 @@ lazy_static::lazy_static! {
 #[derive(Clone, Copy, Debug)]
 pub struct Glyph {
 	pub ch: char,
-	pub color: termion::color::Rgb
+	pub color: termion::color::Rgb,
+	pub permissions: usize
 }
 
 #[derive(Clone, Debug)]
@@ -21,7 +22,7 @@ pub struct World {
 }
 
 pub fn init_map(x: usize, y: usize) -> World {
-	let mut dot = Glyph {ch: '.', color: termion::color::Rgb(15, 15, 15)};
+	let mut dot = Glyph {ch: '.', color: termion::color::Rgb(15, 15, 15), permissions: 0};
 	let mut map = vec![vec![dot; x as usize]; y as usize];
 	let changes = vec![(0, 0)];
 	let plants = vec![];
@@ -43,8 +44,9 @@ pub fn update_map(world: &mut World) -> &mut World {
 	let x = world.width;
 	//plants::test_animation(world);
 	plants::grow_plants(world);
-	world.map[y / 2][x / 2].ch = 'O';
-	world.map[y / 2][x / 2].color = termion::color::Rgb(255, 38, 106);
+	plants::animate_world(world);
+	//world.map[y / 2][x / 2].ch = 'O';
+	//world.map[y / 2][x / 2].color = termion::color::Rgb(255, 38, 106);
 	world
 }
 /*
