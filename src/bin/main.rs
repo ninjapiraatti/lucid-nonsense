@@ -59,17 +59,18 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 		termion::color::Fg(color::Rgb(50,50,50)),
 		termion::color::Bg(color::Rgb(1,5,5)), 
 		cursor::Goto(2, 2 as u16),
-		self.flower.changes,
+		self.flower.changes.len(),
 		termion::color::Bg(color::Reset))
 		.unwrap();
 	}
 
 	fn draw_map(&mut self) {
 		nonsense::flower::update_map(&mut self.flower);
-		for y in 0..self.height {
-			for x in 0..self.width {
-				self.draw_character(self.flower.map[y][x].ch, self.flower.map[y][x].color, (x + 1) as u16, (y + 1) as u16);
-			}
+		//let mut coords = &self.flower.changes.iter();
+		for val in 0..self.flower.changes.len() {
+			let x = self.flower.changes[val].0;
+			let y = self.flower.changes[val].1;
+			self.draw_character(self.flower.map[y][x].ch, self.flower.map[y][x].color, (x + 1) as u16, (y + 1) as u16);	
 		}
 	}
 
@@ -102,6 +103,11 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 			termion::color::Fg(color::Rgb(5,25,25)))
 			.unwrap();
 		self.stdout.flush().unwrap();
+		for y in 0..self.height {
+			for x in 0..self.width {
+				self.draw_character(self.flower.map[y][x].ch, self.flower.map[y][x].color, (x + 1) as u16, (y + 1) as u16);
+			}
+		}
 	}
 
 	fn update(&mut self) -> bool{
