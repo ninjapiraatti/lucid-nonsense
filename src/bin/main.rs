@@ -31,7 +31,7 @@ pub struct UI<R, W> {
     /// Standard output.
     stdout: W,
 	player: Player,
-	flower: nonsense::flower::Flower,
+	world: nonsense::world::World,
 }
 
 impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
@@ -59,25 +59,25 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 		termion::color::Fg(color::Rgb(50,50,50)),
 		termion::color::Bg(color::Rgb(1,5,5)), 
 		cursor::Goto(2, 2 as u16),
-		self.flower.changes.len(),
+		self.world.changes.len(),
 		termion::color::Bg(color::Reset))
 		.unwrap();
 	}
 
 	fn draw_map(&mut self) {
-		nonsense::flower::update_map(&mut self.flower);
-		//let mut coords = &self.flower.changes.iter();
-		for val in 0..self.flower.changes.len() {
-			let x = self.flower.changes[val].0;
-			let y = self.flower.changes[val].1;
-			self.draw_character(self.flower.map[y][x].ch, self.flower.map[y][x].color, (x + 1) as u16, (y + 1) as u16);	
+		nonsense::world::update_map(&mut self.world);
+		//let mut coords = &self.world.changes.iter();
+		for val in 0..self.world.changes.len() {
+			let x = self.world.changes[val].0;
+			let y = self.world.changes[val].1;
+			self.draw_character(self.world.map[y][x].ch, self.world.map[y][x].color, (x + 1) as u16, (y + 1) as u16);	
 		}
 	}
 
 	fn test_draw(&mut self) {
 		let mut index = 0;
 		loop {
-			let test = nonsense::flower::draw_flower(50, 50, index);
+			let test = nonsense::world::draw_world(50, 50, index);
 			index += 1;
 			self.draw_character('X', color::Rgb(0, 150, 150), test.0, test.1);
 		}
@@ -105,7 +105,7 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 		self.stdout.flush().unwrap();
 		for y in 0..self.height {
 			for x in 0..self.width {
-				self.draw_character(self.flower.map[y][x].ch, self.flower.map[y][x].color, (x + 1) as u16, (y + 1) as u16);
+				self.draw_character(self.world.map[y][x].ch, self.world.map[y][x].color, (x + 1) as u16, (y + 1) as u16);
 			}
 		}
 	}
@@ -152,7 +152,7 @@ fn init_ui(width: usize, height: usize) {
 			x: (width / 2) as u16,
 			y: (height / 2) as u16
 		},
-		flower: nonsense::flower::init_map(width, height),
+		world: nonsense::world::init_map(width, height),
 	};
 	ui.reset();
 	ui.start();
