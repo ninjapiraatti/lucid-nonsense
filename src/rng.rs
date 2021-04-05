@@ -1,6 +1,6 @@
 use std::sync::Mutex;
 lazy_static::lazy_static! {
-	static ref RNG :Mutex<RandGen> = Mutex::new(RandGen::new(82374));
+	static ref RNG :Mutex<RandGen> = Mutex::new(RandGen::new(34055));
 }
 
 pub fn rng(max: usize) -> usize {
@@ -18,9 +18,9 @@ impl RandGen {
 	pub fn new(curr: usize) -> Self {
 		RandGen {
 			curr,
-			mul: 29837422,
-			inc: 897290011,
-			modulo: 292384298374
+			mul: 56394237,
+			inc: 346423491,
+			modulo: 23254544563,
 		}
 	}
 
