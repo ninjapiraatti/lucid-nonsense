@@ -3,11 +3,11 @@ use crate::rng;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Plant {
-	x: u16,
-	y: u16,
-	height: u16,
-	family: u16, // Later enum or smth?
-	state: u16, // Also something else than magic number
+	pub x: u16,
+	pub y: u16,
+	pub height: u16,
+	pub family: u16, // Later enum or smth?
+	pub state: u16, // Also something else than magic number
 }
 
 pub fn animate_world(world: &mut world::World) {
@@ -24,14 +24,7 @@ pub fn animate_world(world: &mut world::World) {
 		world.map[y][x].color = termion::color::Rgb(0, 20 + hue1, 10 + hue2);
 	}
 }
-
-pub fn write_glyph(x: usize, y: usize, glyph: char, perms: usize, world: &mut world::World) {
-	world.changes.push((x, y));
-	world.map[y][x].ch = glyph;
-	world.map[y][x].permissions = perms;
-	world.map[y][x].color = termion::color::Rgb(255, 38, 106);
-}
-
+/*
 pub fn plant_plant(x: u16, y: u16, height: u16, world: &mut world::World) {
 	let mut plant = Plant {
 		x: x,
@@ -42,15 +35,38 @@ pub fn plant_plant(x: u16, y: u16, height: u16, world: &mut world::World) {
 	};
 	world.plants.push(plant);
 }
+*/
 
-pub fn grow_plants(world: &mut world::World) {
-	for p in 0..world.plants.len() {
+pub fn grow_plant2(world: &mut world::World, p: usize){
+	let z = rng::rng(world::VGA.chars().count());
+	let glyph = world::VGA.chars().nth(z).unwrap();
+	if world.plants[p].state < world.plants[p].height { // This is hecking stupid
+		let x = world.plants[p].x as usize;
+		let y = (world.plants[p].y - 2 - world.plants[p].state) as usize;
+		//world.plants[p].write_glyph(world.plants[p].x as usize, (world.plants[p].y - 2 - world.plants[p].state) as usize, glyph, 1, world);
+		world.changes.push((x, y));
+		world.map[y][x].ch = glyph;
+		world.map[y][x].permissions = 1;
+		world.map[y][x].color = termion::color::Rgb(255, 38, 106);
+		world.plants[p].state += 1;
+		//println!("{:?}", plant.state);
+	}
+}
+
+impl Plant {
+	pub fn grow_plant(&mut self, world: &mut world::World){
 		let z = rng::rng(world::VGA.chars().count());
 		let glyph = world::VGA.chars().nth(z).unwrap();
-		if world.plants[p].state < world.plants[p].height { // This is hecking stupid
-			write_glyph(world.plants[p].x as usize, (world.plants[p].y - 2 - world.plants[p].state) as usize, glyph, 1, world);
-			world.plants[p].state += 1;
-			println!("{:?}", world.plants[p].state);
+		if self.state < self.height { // This is hecking stupid
+			let x = self.x as usize;
+			let y = (self.y - 2 - self.state) as usize;
+			//self.write_glyph(self.x as usize, (self.y - 2 - self.state) as usize, glyph, 1, world);
+			world.changes.push((x, y));
+			world.map[y][x].ch = glyph;
+			world.map[y][x].permissions = 1;
+			world.map[y][x].color = termion::color::Rgb(255, 38, 106);
+			self.state += 1;
+			println!("{:?}", self.state);
 		}
 	}
 }

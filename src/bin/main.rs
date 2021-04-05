@@ -7,6 +7,7 @@ use std::thread;
 use nonsense; // That is the name of the library of this program
 use nonsense::rng;
 use nonsense::plants;
+use nonsense::world;
 mod graphics {
 	pub const PLAYER: char = '🦀';
 }
@@ -31,7 +32,7 @@ pub struct UI<R, W> {
     /// Standard output.
     stdout: W,
 	player: Player,
-	world: nonsense::world::World,
+	world: world::World,
 }
 
 impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
@@ -65,8 +66,9 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 	}
 
 	fn draw_map(&mut self) {
-		nonsense::world::update_map(&mut self.world);
+		//nonsense::world::update_map(&mut self.world);
 		//let mut coords = &self.world.changes.iter();
+		self.world.update_map();
 		for val in 0..self.world.changes.len() {
 			let x = self.world.changes[val].0;
 			let y = self.world.changes[val].1;
@@ -116,7 +118,7 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
             b'j' | b's' => self.player.y += 1,
             b'h' | b'a' => self.player.x -= 1,
             b'l' | b'd' => self.player.x += 1,
-			b'f' => plants::plant_plant(self.player.x, self.player.y, 10, &mut self.world),
+			b'f' => self.world.plant_plant(self.player.x, self.player.y, 10),
             _ => {},
         }
 		self.draw_map();

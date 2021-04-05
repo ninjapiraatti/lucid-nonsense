@@ -21,11 +21,43 @@ pub struct World {
 	pub dot: Glyph,
 }
 
+impl World {
+	pub fn plant_plant(&mut self, x: u16, y: u16, height: u16) {
+		let plant = plants::Plant {
+			x: x,
+			y: y,
+			height: height,
+			family: 1,
+			state: 0,
+		};
+		self.plants.push(plant);
+	}
+	pub fn grow_plants(&mut self) {
+		for p in 0..self.plants.len() {
+			//self.plants[p].grow_plant(self);
+			//self.plants[p].grow_plant(self);
+			//println!("Grow plants");
+			plants::grow_plant2(self, p);
+		}
+	}
+	pub fn update_map(&mut self) {
+		self.changes = vec![(0,0)];
+		let y = self.height;
+		let x = self.width;
+		//plants::test_animation(self);
+		//plants::grow_plants(self);
+		self.grow_plants();
+		plants::animate_world(self);
+		//self.map[y / 2][x / 2].ch = 'O';
+		//self.map[y / 2][x / 2].color = termion::color::Rgb(255, 38, 106);
+	}
+}
+
 pub fn init_map(x: usize, y: usize) -> World {
 	let mut dot = Glyph {ch: '.', color: termion::color::Rgb(15, 15, 15), permissions: 0};
 	let mut map = vec![vec![dot; x as usize]; y as usize];
 	let changes = vec![(0, 0)];
-	let plants = vec![];
+	let mut plants = vec![];
 	let width = x;
 	let height = y;
 	World {
@@ -36,18 +68,6 @@ pub fn init_map(x: usize, y: usize) -> World {
 		height,
 		dot
 	}
-}
-
-pub fn update_map(world: &mut World) -> &mut World {
-	world.changes = vec![(0,0)];
-	let y = world.height;
-	let x = world.width;
-	//plants::test_animation(world);
-	plants::grow_plants(world);
-	plants::animate_world(world);
-	//world.map[y / 2][x / 2].ch = 'O';
-	//world.map[y / 2][x / 2].color = termion::color::Rgb(255, 38, 106);
-	world
 }
 /*
 pub fn draw_world(x: u16, y: u16, count: u16) -> (u16, u16, char, bool) {
