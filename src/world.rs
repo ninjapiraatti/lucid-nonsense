@@ -1,4 +1,3 @@
-use crate::rng;
 use crate::plants;
 lazy_static::lazy_static! {
 	pub static ref VGA: String = String::from("ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáíóúñÑªº¿⌐¬½¼¡«»░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀αßΓπΣσµτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²■ ☺☻♥♦♣♠•◘○◙♂♀♪♫☼►◄↕‼¶§▬↨↑↓→←∟↔▲▼!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~⌂");
@@ -34,30 +33,21 @@ impl World {
 	}
 	pub fn grow_plants(&mut self) {
 		for p in 0..self.plants.len() {
-			//self.plants[p].grow_plant(self);
-			//self.plants[p].grow_plant(self);
-			//println!("Grow plants");
-			plants::grow_plant2(self, p);
+			plants::grow_plant(self, p);
 		}
 	}
 	pub fn update_map(&mut self) {
 		self.changes = vec![(0,0)];
-		let y = self.height;
-		let x = self.width;
-		//plants::test_animation(self);
-		//plants::grow_plants(self);
 		self.grow_plants();
 		plants::animate_world(self);
-		//self.map[y / 2][x / 2].ch = 'O';
-		//self.map[y / 2][x / 2].color = termion::color::Rgb(255, 38, 106);
 	}
 }
 
 pub fn init_map(x: usize, y: usize) -> World {
-	let mut dot = Glyph {ch: '.', color: termion::color::Rgb(15, 15, 15), permissions: 0};
-	let mut map = vec![vec![dot; x as usize]; y as usize];
+	let dot = Glyph {ch: '.', color: termion::color::Rgb(15, 15, 15), permissions: 0};
+	let map = vec![vec![dot; x as usize]; y as usize];
 	let changes = vec![(0, 0)];
-	let mut plants = vec![];
+	let plants = vec![];
 	let width = x;
 	let height = y;
 	World {
@@ -69,13 +59,3 @@ pub fn init_map(x: usize, y: usize) -> World {
 		dot
 	}
 }
-/*
-pub fn draw_world(x: u16, y: u16, count: u16) -> (u16, u16, char, bool) {
-	let xf = rng::rng(20) as u16;
-	let yf = rng::rng(20) as u16;
-	if count > 9 {
-		return(1, 1, 'Ö', true);
-	}
-	return(xf, yf, 'ä', false)
-}
-*/

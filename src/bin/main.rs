@@ -1,18 +1,12 @@
 extern crate termion;
-use termion::{async_stdin, clear, color, cursor, style};
+use termion::{async_stdin, color, cursor, style};
 use termion::raw::IntoRawMode;
-use std::io::{Read, Write, stdout, stdin};
-use std::time::{Duration, Instant};
+use std::io::{Read, Write, stdout}; // Add stdin if you need to switch away from async_stdin
 use std::thread;
 use nonsense; // That is the name of the library of this program
-use nonsense::rng;
-use nonsense::plants;
 use nonsense::world;
 mod graphics {
 	pub const PLAYER: char = '🦀';
-}
-mod colors {
-	pub const CYAN: termion::color::Rgb = termion::color::Rgb(1, 221, 214); // This can't be right
 }
 
 use self::graphics::*;
@@ -87,8 +81,6 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 	}
 
 	fn reset(&mut self) {
-		let width: u16 = self.width as u16;
-        let height: u16 = self.height as u16;
 		write!(self.stdout,
 			"{}{}{}",
 			termion::clear::All,
@@ -105,13 +97,8 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 
 	fn update(&mut self) -> bool{
 		let mut key_bytes = [0];
-		let width: u16 = self.width as u16;
-        let height: u16 = self.height as u16;
         self.stdin.read(&mut key_bytes).unwrap();
-		let mut rnd = rng::RandGen::new(self.player.x as usize * 4567);
-        //self.rand.write_u8(key_bytes[0]);
 		self.clear_player();
-		//println!("{}", "Player");
         match key_bytes[0] {
             b'q' => return false,
             b'k' | b'w' => self.player.y -= 1,
@@ -125,7 +112,6 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 		self.draw_player();
 		self.draw_debug();
 		let delay = std::time::Duration::from_millis(20);
-		let now = std::time::Instant::now();
 		thread::sleep(delay);
 		true
 	}
@@ -133,7 +119,7 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 
 fn init_ui(width: usize, height: usize) {
 	let stdout = stdout();
-	let mut stdout = stdout.lock().into_raw_mode().unwrap();
+	let stdout = stdout.lock().into_raw_mode().unwrap();
 	let stdin = async_stdin();
 	//let stdin = stdin.lock();
 	let mut ui = UI {
