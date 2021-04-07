@@ -1,6 +1,10 @@
 use crate::plants;
-lazy_static::lazy_static! {
-	pub static ref VGA: String = String::from("ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáíóúñÑªº¿⌐¬½¼¡«»░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀αßΓπΣσµτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²■ ☺☻♥♦♣♠•◘○◙♂♀♪♫☼►◄↕‼¶§▬↨↑↓→←∟↔▲▼!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~⌂");
+
+// Player
+#[derive(Clone, Debug)]
+pub struct Player {
+	pub x: u16,
+	pub y: u16
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -18,6 +22,7 @@ pub struct World {
 	pub width: usize,
 	pub height: usize, 
 	pub dot: Glyph,
+	pub player: Player,
 }
 
 impl World {
@@ -46,6 +51,10 @@ pub fn init_world(x: usize, y: usize) -> World {
 		plants,
 		width,
 		height,
-		dot
+		dot,
+		player: Player {
+			x: (width / 2) as u16,
+			y: (height / 2) as u16
+		},
 	}
 }

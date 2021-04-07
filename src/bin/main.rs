@@ -6,17 +6,11 @@ use std::thread;
 use nonsense; // That is the name of the library of this program
 use nonsense::world;
 use nonsense::plants;
+use nonsense::utils;
 mod graphics {
 	pub const PLAYER: char = '🦀';
 }
-
 use self::graphics::*;
-
-// Player
-struct Player {
-	x: u16,
-	y: u16
-}
 
 // The UI state.
 pub struct UI<R, W> {
@@ -26,7 +20,6 @@ pub struct UI<R, W> {
     stdin: R,
     /// Standard output.
     stdout: W,
-	player: Player,
 	world: world::World,
 }
 
@@ -43,11 +36,11 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 		}
 	}
 	fn clear_player(&mut self) {
-		write!(self.stdout, "{} ", cursor::Goto(self.player.x, self.player.y)).unwrap();
+		write!(self.stdout, "{} ", cursor::Goto(self.world.player.x, self.world.player.y)).unwrap();
 	}
 
 	fn draw_player(&mut self) {
-		self.draw_character(PLAYER as char, termion::color::Rgb(20,60,60), self.player.x, self.player.y);
+		self.draw_character(PLAYER as char, termion::color::Rgb(20,60,60), self.world.player.x, self.world.player.y);
 	}
 
 	fn draw_debug(&mut self) {
@@ -100,11 +93,11 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 		self.clear_player();
         match key_bytes[0] {
             b'q' => return false,
-            b'k' | b'w' => self.player.y -= 1,
-            b'j' | b's' => self.player.y += 1,
-            b'h' | b'a' => self.player.x -= 1,
-            b'l' | b'd' => self.player.x += 1,
-			b'f' => plants::plant_plant(&mut self.world, self.player.x, self.player.y, 10),
+            b'k' | b'w' => {self.world.player.y -= 1; utils::check_bounds(&mut self.world);}
+            b'j' | b's' => {self.world.player.y += 1; utils::check_bounds(&mut self.world);}
+            b'h' | b'a' => {self.world.player.x -= 1; utils::check_bounds(&mut self.world);}
+            b'l' | b'd' => {self.world.player.x += 1; utils::check_bounds(&mut self.world);}
+			b'f' => plants::plant_plant(&mut self.world, 10),
             _ => {},
         }
 		self.draw_map();
@@ -126,10 +119,6 @@ fn init_ui(width: usize, height: usize) {
 		height: height,
 		stdin: stdin,
 		stdout: stdout,
-		player: Player {
-			x: (width / 2) as u16,
-			y: (height / 2) as u16
-		},
 		world: nonsense::world::init_world(width, height),
 	};
 	ui.reset();
