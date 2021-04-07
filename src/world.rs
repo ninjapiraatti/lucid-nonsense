@@ -21,29 +21,19 @@ pub struct World {
 }
 
 impl World {
-	pub fn plant_plant(&mut self, x: u16, y: u16, height: u16) {
-		let plant = plants::Plant {
-			x: x,
-			y: y,
-			height: height,
-			family: 1,
-			state: 0,
-		};
-		self.plants.push(plant);
-	}
 	pub fn grow_plants(&mut self) {
 		for p in 0..self.plants.len() {
 			plants::grow_plant(self, p);
 		}
 	}
-	pub fn update_map(&mut self) {
+	pub fn update_world(&mut self) {
 		self.changes = vec![(0,0)];
 		self.grow_plants();
-		plants::animate_world(self);
+		plants::grow_grass(self);
 	}
 }
 
-pub fn init_map(x: usize, y: usize) -> World {
+pub fn init_world(x: usize, y: usize) -> World {
 	let dot = Glyph {ch: '.', color: termion::color::Rgb(15, 15, 15), permissions: 0};
 	let map = vec![vec![dot; x as usize]; y as usize];
 	let changes = vec![(0, 0)];

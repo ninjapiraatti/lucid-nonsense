@@ -5,6 +5,7 @@ use std::io::{Read, Write, stdout}; // Add stdin if you need to switch away from
 use std::thread;
 use nonsense; // That is the name of the library of this program
 use nonsense::world;
+use nonsense::plants;
 mod graphics {
 	pub const PLAYER: char = '🦀';
 }
@@ -60,9 +61,7 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 	}
 
 	fn draw_map(&mut self) {
-		//nonsense::world::update_map(&mut self.world);
-		//let mut coords = &self.world.changes.iter();
-		self.world.update_map();
+		self.world.update_world();
 		for val in 0..self.world.changes.len() {
 			let x = self.world.changes[val].0;
 			let y = self.world.changes[val].1;
@@ -105,7 +104,7 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
             b'j' | b's' => self.player.y += 1,
             b'h' | b'a' => self.player.x -= 1,
             b'l' | b'd' => self.player.x += 1,
-			b'f' => self.world.plant_plant(self.player.x, self.player.y, 10),
+			b'f' => plants::plant_plant(&mut self.world, self.player.x, self.player.y, 10),
             _ => {},
         }
 		self.draw_map();
@@ -131,7 +130,7 @@ fn init_ui(width: usize, height: usize) {
 			x: (width / 2) as u16,
 			y: (height / 2) as u16
 		},
-		world: nonsense::world::init_map(width, height),
+		world: nonsense::world::init_world(width, height),
 	};
 	ui.reset();
 	ui.start();

@@ -10,7 +10,7 @@ pub struct Plant {
 	pub state: u16, // Also something else than magic number
 }
 
-pub fn animate_world(world: &mut world::World) {
+pub fn grow_grass(world: &mut world::World) {
 	let hue1 = rng::rng(15) as u8;
 	let hue2 = rng::rng(15) as u8;
 	let x = rng::rng(world.width);
@@ -21,6 +21,17 @@ pub fn animate_world(world: &mut world::World) {
 		world.map[y][x].ch = world::VGA.chars().nth(z).unwrap();
 		world.map[y][x].color = termion::color::Rgb(0, 20 + hue1, 10 + hue2);
 	}
+}
+
+pub fn plant_plant(world: &mut world::World, x: u16, y: u16, height: u16) {
+	let plant = Plant {
+		x: x,
+		y: y,
+		height: height,
+		family: 1,
+		state: 0,
+	};
+	world.plants.push(plant);
 }
 
 pub fn grow_plant(world: &mut world::World, p: usize){
