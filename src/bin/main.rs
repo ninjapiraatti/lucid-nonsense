@@ -93,7 +93,7 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 		self.clear_player();
         match key_bytes[0] {
             b'q' => return false,
-            b'k' | b'w' => {self.world.player.y -= 1; utils::check_bounds(&mut self.world);}
+            b'k' | b'w' => {self.world.player.y -= 1; utils::check_bounds(&mut self.world);} // Any way to avoid this repetition?
             b'j' | b's' => {self.world.player.y += 1; utils::check_bounds(&mut self.world);}
             b'h' | b'a' => {self.world.player.x -= 1; utils::check_bounds(&mut self.world);}
             b'l' | b'd' => {self.world.player.x += 1; utils::check_bounds(&mut self.world);}
@@ -103,7 +103,7 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 		self.draw_map();
 		self.draw_player();
 		self.draw_debug();
-		let delay = std::time::Duration::from_millis(20);
+		let delay = std::time::Duration::from_millis(50); // The player should update fast and the rest of the world slow. How to do this?
 		thread::sleep(delay);
 		true
 	}
