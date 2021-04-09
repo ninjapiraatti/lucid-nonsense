@@ -39,12 +39,16 @@ pub fn grow_plant(world: &mut world::World, p: usize){
 	let z = rng::rng(lib::VGA.chars().count());
 	let glyph = lib::VGA.chars().nth(z).unwrap();
 	if world.plants[p].state < world.plants[p].height { // This is hecking stupid. world.plants[p]
-		let x = world.plants[p].x as usize;
-		let y = (world.plants[p].y - 2 - world.plants[p].state) as usize;
-		world.changes.push((x, y));
-		world.map[y][x].ch = glyph;
-		world.map[y][x].permissions = 1;
-		world.map[y][x].color = termion::color::Rgb(255, 38, 106);
+		let x: i32 = world.plants[p].x as i32;
+		let y: i32 = world.plants[p].y as i32 - 2 - world.plants[p].state as i32;
+		if x >= 0 && y >= 0 {
+			let x = x as usize;
+			let y = y as usize;
+			world.changes.push((x, y));
+			world.map[y][x].ch = glyph;
+			world.map[y][x].permissions = 1;
+			world.map[y][x].color = termion::color::Rgb(255, 38, 106);
+		}
 		world.plants[p].state += 1;
 	}
 }
