@@ -12,7 +12,7 @@ pub struct Glyph {
 	pub ch: char,
 	pub color: termion::color::Rgb,
 	pub permissions: usize,
-	pub z: u16
+	pub z: u16,
 }
 
 #[derive(Clone, Debug)]
@@ -41,21 +41,16 @@ impl World {
 
 pub fn init_world(x: usize, y: usize) -> World {
 	let dot = Glyph {ch: '.', color: termion::color::Rgb(15, 15, 15), permissions: 0, z: 0};
-	let map = vec![vec![dot; x as usize]; y as usize];
-	let changes = vec![(0, 0)];
-	let plants = vec![];
-	let width = x;
-	let height = y;
 	World {
-		changes,
-		map,
-		plants,
-		width,
-		height,
 		dot,
+		changes: vec![(0, 0)],
+		map: vec![vec![dot; x as usize]; y as usize],
+		plants: vec![],
+		width: x,
+		height: y,
 		player: Player {
-			x: (width / 2) as u16,
-			y: (height / 2) as u16
+			x: (x / 2) as u16,
+			y: (y / 2) as u16
 		},
 	}
 }

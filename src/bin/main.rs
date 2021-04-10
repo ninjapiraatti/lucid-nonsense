@@ -3,10 +3,9 @@ use termion::{color, async_stdin, cursor, style};
 use termion::raw::IntoRawMode;
 use std::io::{Read, Write, stdout}; // Add stdin if you need to switch away from async_stdin
 use std::thread;
-use nonsense; // That is the name of the library of this program
+use nonsense::{self, world::World}; // That is the name of the library of this program
 use nonsense::world;
 use nonsense::plants;
-use nonsense::utils;
 mod graphics {
 	pub const PLAYER: char = '♥';
 }
@@ -20,49 +19,48 @@ pub struct UI<R, W> {
     stdin: R,
     /// Standard output.
     stdout: W,
-	world: world::World,
 }
 
 impl <R: Read, W: Write> UI<R, W> {
-	fn start(&mut self) {
+	fn start(&mut self, world: &mut World) {
 		write!(self.stdout, "{}", cursor::Hide).unwrap();
-		self.reset();
+		self.reset(world);
 		loop {
-			if !self.update() {
+			if !self.update(world) {
                 return;
             }
 			write!(self.stdout, "{}", style::Reset).unwrap();
             self.stdout.flush().unwrap();
 		}
 	}
-	fn clear_player(&mut self) {
-		if self.world.map[(self.world.player.y - 1) as usize][(self.world.player.x - 1) as usize].z < self.world.player.y {
-			write!(self.stdout, "{} ", cursor::Goto(self.world.player.x, self.world.player.y)).unwrap();
+	fn clear_player(&mut self, world: &mut World) {
+		if world.map[(world.player.y - 1) as usize][(world.player.x - 1) as usize].z < world.player.y { // WTF
+			write!(self.stdout, "{} ", cursor::Goto(world.player.x, world.player.y)).unwrap();
 		}
 	}
 
-	fn draw_player(&mut self) {
-		if self.world.map[(self.world.player.y - 1) as usize][(self.world.player.x - 1) as usize].z < self.world.player.y {
-			self.draw_character(PLAYER as char, termion::color::Rgb(240,160,0), self.world.player.x, self.world.player.y);
+	fn draw_player(&mut self, world: &mut World) {
+		if world.map[(world.player.y - 1) as usize][(world.player.x - 1) as usize].z < world.player.y {
+			self.draw_character(PLAYER as char, termion::color::Rgb(240,160,0), world.player.x, world.player.y);
 		}
 	}
 
-	fn draw_debug(&mut self) {
+	fn draw_debug(&mut self, world: &mut World) {
 		write!(self.stdout, "{}{}{}{:?}{}", 
 		termion::color::Fg(color::Rgb(50,50,50)),
 		termion::color::Bg(color::Rgb(1,5,5)), 
 		cursor::Goto(2, 2 as u16),
-		self.world.changes.len(),
+		world.changes.len(),
 		termion::color::Bg(color::Reset))
 		.unwrap();
 	}
 
-	fn draw_map(&mut self) {
-		self.world.update_world();
-		for val in 0..self.world.changes.len() {
-			let x = self.world.changes[val].0;
-			let y = self.world.changes[val].1;
-			self.draw_character(self.world.map[y][x].ch, self.world.map[y][x].color, (x + 1) as u16, (y + 1) as u16);	
+	fn draw_map(&mut self, world: &mut World) {
+		world.update_world();
+		for val in 0..world.changes.len() {
+			let x = world.changes[val].0;
+			let y = world.changes[val].1;
+			self.draw_character(world.map[y][x].ch, world.map[y][x].color, (x + 1) as u16, (y + 1) as u16);	
 		}
 	}
 
@@ -76,7 +74,7 @@ impl <R: Read, W: Write> UI<R, W> {
 		.unwrap();
 	}
 
-	fn reset(&mut self) {
+	fn reset(&mut self, world: &mut World) {
 		write!(self.stdout,
 			"{}{}{}",
 			termion::clear::All,
@@ -86,34 +84,34 @@ impl <R: Read, W: Write> UI<R, W> {
 		self.stdout.flush().unwrap();
 		for y in 0..self.height {
 			for x in 0..self.width {
-				self.draw_character(self.world.map[y][x].ch, self.world.map[y][x].color, (x + 1) as u16, (y + 1) as u16);
+				self.draw_character(world.map[y][x].ch, world.map[y][x].color, (x + 1) as u16, (y + 1) as u16);
 			}
 		}
 	}
 
-	fn update(&mut self) -> bool{
+	fn update(&mut self, world: &mut World) -> bool{
 		let mut key_bytes = [0];
         self.stdin.read(&mut key_bytes).unwrap();
-		self.clear_player();
+		self.clear_player(world);
         match key_bytes[0] {
             b'q' => return false,
-            b'k' | b'w' => {self.world.player.y -= 1; utils::check_bounds(&mut self.world);} // Any way to avoid this repetition?
-            b'j' | b's' => {self.world.player.y += 1; utils::check_bounds(&mut self.world);}
-            b'h' | b'a' => {self.world.player.x -= 1; utils::check_bounds(&mut self.world);}
-            b'l' | b'd' => {self.world.player.x += 1; utils::check_bounds(&mut self.world);}
-			b'f' => plants::plant_plant(&mut self.world, 10, 10),
+            b'k' | b'w' => {world.player.y -= if world.player.y == 0 {0} else {1};}// Any way to avoid this repetition?
+            b'j' | b's' => {world.player.y += if world.player.y == world.height as u16 {0} else {1};}
+            b'h' | b'a' => {world.player.x -= if world.player.x == 0 {0} else {1};}
+            b'l' | b'd' => {world.player.x += if world.player.y == world.width as u16 {0} else {1};}
+			b'f' => plants::plant_plant(world, 10, 10),
             _ => {},
         }
-		self.draw_map();
-		self.draw_player();
-		self.draw_debug();
+		self.draw_map(world);
+		self.draw_player(world);
+		self.draw_debug(world);
 		let delay = std::time::Duration::from_millis(30); // The player should update fast and the rest of the world slow. How to do this?
 		thread::sleep(delay);
 		true
 	}
 }
 
-fn init_ui(width: usize, height: usize) {
+fn start_game(width: usize, height: usize, world: &mut World) {
 	let stdout = stdout();
 	let stdout = stdout.lock().into_raw_mode().unwrap();
 	let stdin = async_stdin();
@@ -123,14 +121,14 @@ fn init_ui(width: usize, height: usize) {
 		height,
 		stdin,
 		stdout,
-		world: nonsense::world::init_world(width, height),
 	};
-	ui.reset();
-	ui.start();
+	ui.reset(world);
+	ui.start(world);
 }
 
 fn main() {
 	let size: (u16, u16) = termion::terminal_size().unwrap();
-	init_ui(size.0 as usize, size.1 as usize);
+	let mut world = world::init_world(size.0 as usize, size.1 as usize);
+	start_game(size.0 as usize, size.1 as usize, &mut world);
 }
 
