@@ -1,5 +1,5 @@
 extern crate termion;
-use termion::{async_stdin, color, cursor, style};
+use termion::{color, async_stdin, cursor, style};
 use termion::raw::IntoRawMode;
 use std::io::{Read, Write, stdout}; // Add stdin if you need to switch away from async_stdin
 use std::thread;
@@ -103,7 +103,7 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 		self.draw_map();
 		self.draw_player();
 		self.draw_debug();
-		let delay = std::time::Duration::from_millis(50); // The player should update fast and the rest of the world slow. How to do this?
+		let delay = std::time::Duration::from_millis(30); // The player should update fast and the rest of the world slow. How to do this?
 		thread::sleep(delay);
 		true
 	}
@@ -115,10 +115,10 @@ fn init_ui(width: usize, height: usize) {
 	let stdin = async_stdin();
 	//let stdin = stdin.lock();
 	let mut ui = UI {
-		width: width,
-		height: height,
-		stdin: stdin,
-		stdout: stdout,
+		width,
+		height,
+		stdin,
+		stdout,
 		world: nonsense::world::init_world(width, height),
 	};
 	ui.reset();
