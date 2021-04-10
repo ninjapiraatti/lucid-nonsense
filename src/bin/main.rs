@@ -8,7 +8,7 @@ use nonsense::world;
 use nonsense::plants;
 use nonsense::utils;
 mod graphics {
-	pub const PLAYER: char = '🦀';
+	pub const PLAYER: char = '♥';
 }
 use self::graphics::*;
 
@@ -23,7 +23,7 @@ pub struct UI<R, W> {
 	world: world::World,
 }
 
-impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
+impl <R: Read, W: Write> UI<R, W> {
 	fn start(&mut self) {
 		write!(self.stdout, "{}", cursor::Hide).unwrap();
 		self.reset();
@@ -36,11 +36,15 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
 		}
 	}
 	fn clear_player(&mut self) {
-		write!(self.stdout, "{} ", cursor::Goto(self.world.player.x, self.world.player.y)).unwrap();
+		if self.world.map[(self.world.player.y - 1) as usize][(self.world.player.x - 1) as usize].z < self.world.player.y {
+			write!(self.stdout, "{} ", cursor::Goto(self.world.player.x, self.world.player.y)).unwrap();
+		}
 	}
 
 	fn draw_player(&mut self) {
-		self.draw_character(PLAYER as char, termion::color::Rgb(20,60,60), self.world.player.x, self.world.player.y);
+		if self.world.map[(self.world.player.y - 1) as usize][(self.world.player.x - 1) as usize].z < self.world.player.y {
+			self.draw_character(PLAYER as char, termion::color::Rgb(240,160,0), self.world.player.x, self.world.player.y);
+		}
 	}
 
 	fn draw_debug(&mut self) {
@@ -97,7 +101,7 @@ impl <R: Read, W: Write> UI<R, W> { // What does this declaration really do?
             b'j' | b's' => {self.world.player.y += 1; utils::check_bounds(&mut self.world);}
             b'h' | b'a' => {self.world.player.x -= 1; utils::check_bounds(&mut self.world);}
             b'l' | b'd' => {self.world.player.x += 1; utils::check_bounds(&mut self.world);}
-			b'f' => plants::plant_plant(&mut self.world, 10),
+			b'f' => plants::plant_plant(&mut self.world, 10, 10),
             _ => {},
         }
 		self.draw_map();
@@ -113,7 +117,7 @@ fn init_ui(width: usize, height: usize) {
 	let stdout = stdout();
 	let stdout = stdout.lock().into_raw_mode().unwrap();
 	let stdin = async_stdin();
-	//let stdin = stdin.lock();
+	//let stdin = stdin.lock(); // Bring this back in if you change back to synced stdin
 	let mut ui = UI {
 		width,
 		height,
@@ -126,7 +130,6 @@ fn init_ui(width: usize, height: usize) {
 }
 
 fn main() {
-    // Initialize termion stuff.
 	let size: (u16, u16) = termion::terminal_size().unwrap();
 	init_ui(size.0 as usize, size.1 as usize);
 }

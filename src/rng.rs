@@ -6,7 +6,6 @@ lazy_static::lazy_static! {
 pub fn rng(max: usize) -> usize {
 	RNG.lock().unwrap().next_v(max)
 }
-
 pub struct RandGen {
 	curr: usize,
 	mul: usize,

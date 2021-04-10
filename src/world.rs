@@ -11,7 +11,8 @@ pub struct Player {
 pub struct Glyph {
 	pub ch: char,
 	pub color: termion::color::Rgb,
-	pub permissions: usize
+	pub permissions: usize,
+	pub z: u16
 }
 
 #[derive(Clone, Debug)]
@@ -39,7 +40,7 @@ impl World {
 }
 
 pub fn init_world(x: usize, y: usize) -> World {
-	let dot = Glyph {ch: '.', color: termion::color::Rgb(15, 15, 15), permissions: 0};
+	let dot = Glyph {ch: '.', color: termion::color::Rgb(15, 15, 15), permissions: 0, z: 0};
 	let map = vec![vec![dot; x as usize]; y as usize];
 	let changes = vec![(0, 0)];
 	let plants = vec![];
