@@ -24,6 +24,8 @@ pub struct World {
 	pub height: usize, 
 	pub dot: Glyph,
 	pub player: Player,
+	pub debugstr: String,
+	pub debugint: i32
 }
 
 impl World {
@@ -48,6 +50,8 @@ pub fn init_world(x: usize, y: usize) -> World {
 		plants: vec![],
 		width: x,
 		height: y,
+		debugstr: "Henlo".to_string(),
+		debugint: 0,
 		player: Player {
 			x: (x / 2) as u16,
 			y: (y / 2) as u16

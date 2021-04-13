@@ -46,11 +46,13 @@ impl <R: Read, W: Write> UI<R, W> {
 	}
 
 	fn draw_debug(&mut self, world: &mut World) {
-		write!(self.stdout, "{}{}{}{:?}{}", 
+		write!(self.stdout, "{}{}{}{:?}\n{:?}\n{:?}{}", 
 		termion::color::Fg(color::Rgb(50,50,50)),
 		termion::color::Bg(color::Rgb(1,5,5)), 
 		cursor::Goto(2, 2 as u16),
 		world.changes.len(),
+		world.debugstr,
+		world.debugint,
 		termion::color::Bg(color::Reset))
 		.unwrap();
 	}
