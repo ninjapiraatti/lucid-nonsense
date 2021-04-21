@@ -10,7 +10,7 @@ pub struct Plant {
 	pub family: u16, // Later enum or smth?
 	pub totalstate: u16, // Also something else than magic number
 	pub trunkstate: u16,
-	pub branchnodes: Vec<(u16, u16)>,
+	pub branchnodes: Vec<(i32, i32, i32)>,
 	pub leafnodes: Vec<(u16, u16)>
 }
 
@@ -61,15 +61,22 @@ pub fn grow_plant(world: &mut world::World, p: usize){
 			world.plants[p].trunkstate += 1;
 		}
 		if world.plants[p].trunkstate > 3 && world.plants[p].trunkstate < world.plants[p].height{
-			if rnd % 4 == 0 {
+			if rnd % 3 == 0 {
 				if rnd < 51 {
-					world.plants[p].branchnodes.push((x as u16 - 1, y as u16));
+					world.plants[p].branchnodes.push((x - 1, y, -1));
 				} else {
-					world.plants[p].branchnodes.push((x as u16 + 1, y as u16));
+					world.plants[p].branchnodes.push((x + 1, y, 1));
 				}
 			}
+			let plant_iter = world.plants[p].branchnodes.iter_mut();
+			for node in plant_iter {
+				world.map[node.1 as usize][node.0 as usize].ch = branch;
+				world.changes.push((node.0 as usize, node.1 as usize));
+				world.map[node.1 as usize][node.0 as usize].color = termion::color::Rgb(255, 38, 106);
+				world.map[node.1 as usize][node.0 as usize].permissions = 1;
+				node.0 += node.2;
+			}
 		}
-		
 		world.plants[p].totalstate += 1;
 	}
 }
