@@ -1,4 +1,5 @@
 extern crate termion;
+use nonsense::rng;
 use termion::{color, async_stdin, cursor, style};
 use termion::raw::IntoRawMode;
 use std::io::{Read, Write, stdout}; // Add stdin if you need to switch away from async_stdin
@@ -42,6 +43,18 @@ impl <R: Read, W: Write> UI<R, W> {
 	fn draw_player(&mut self, world: &mut World) {
 		if world.map[(world.player.y - 1) as usize][(world.player.x - 1) as usize].z < world.player.y {
 			self.draw_character(PLAYER as char, termion::color::Rgb(240,160,0), world.player.x, world.player.y);
+		}
+	}
+
+	fn move_player_and_plant(&mut self, world: &mut World) {
+		let rnd = rng::rng(1000);
+		match rnd {
+			1..=100 => {world.player.y -= if world.player.y == 0 {0} else {1};}
+            101..=200 => {world.player.y += if world.player.y == world.height as u16 {0} else {1};}
+            201..=300 => {world.player.x -= if world.player.x == 0 {0} else {1};}
+            301..=400 => {world.player.x += if world.player.y == world.width as u16 {0} else {1};}
+			666 => plants::plant_plant(world, 10, 10),
+			_ => {},
 		}
 	}
 
@@ -98,14 +111,15 @@ impl <R: Read, W: Write> UI<R, W> {
 		self.clear_player(world);
         match key_bytes[0] {
             b'q' => return false,
-            b'k' | b'w' => {world.player.y -= if world.player.y == 0 {0} else {1};}// Any way to avoid this repetition?
-            b'j' | b's' => {world.player.y += if world.player.y == world.height as u16 {0} else {1};}
-            b'h' | b'a' => {world.player.x -= if world.player.x == 0 {0} else {1};}
-            b'l' | b'd' => {world.player.x += if world.player.y == world.width as u16 {0} else {1};}
-			b'f' => plants::plant_plant(world, 10, 10),
+            //b'k' | b'w' => {world.player.y -= if world.player.y == 0 {0} else {1};}// Any way to avoid this repetition?
+            //b'j' | b's' => {world.player.y += if world.player.y == world.height as u16 {0} else {1};}
+            //b'h' | b'a' => {world.player.x -= if world.player.x == 0 {0} else {1};}
+            //b'l' | b'd' => {world.player.x += if world.player.y == world.width as u16 {0} else {1};}
+			//b'f' => plants::plant_plant(world, 10, 10),
             _ => {},
         }
 		self.draw_map(world);
+		self.move_player_and_plant(world);
 		self.draw_player(world);
 		self.draw_debug(world);
 		let delay = std::time::Duration::from_millis(30); // The player should update fast and the rest of the world slow. How to do this?
