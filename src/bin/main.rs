@@ -14,26 +14,27 @@ use self::graphics::*;
 
 // The UI state.
 pub struct UI<R, W> {
-    width: usize,
-    height: usize,
-    /// Standard input.
-    stdin: R,
-    /// Standard output.
-    stdout: W,
+	width: usize,
+	height: usize,
+	/// Standard input.
+	stdin: R,
+	/// Standard output.
+	stdout: W,
 }
 
 impl <R: Read, W: Write> UI<R, W> {
-	fn start(&mut self, world: &mut World) {
+	fn run(&mut self, world: &mut World) {
 		write!(self.stdout, "{}", cursor::Hide).unwrap();
 		self.reset(world);
 		loop {
 			if !self.update(world) {
-                return;
-            }
+				return;
+      }
 			write!(self.stdout, "{}", style::Reset).unwrap();
-            self.stdout.flush().unwrap();
+      self.stdout.flush().unwrap();
 		}
 	}
+
 	fn clear_player(&mut self, world: &mut World) {
 		if world.map[(world.player.y - 1) as usize][(world.player.x - 1) as usize].z < world.player.y { // WTF
 			write!(self.stdout, "{} ", cursor::Goto(world.player.x, world.player.y)).unwrap();
@@ -50,9 +51,9 @@ impl <R: Read, W: Write> UI<R, W> {
 		let rnd = rng::rng(1000);
 		match rnd {
 			1..=100 => {world.player.y -= if world.player.y == 0 {0} else {1};}
-            101..=200 => {world.player.y += if world.player.y == world.height as u16 {0} else {1};}
-            201..=300 => {world.player.x -= if world.player.x == 0 {0} else {1};}
-            301..=400 => {world.player.x += if world.player.y == world.width as u16 {0} else {1};}
+			101..=200 => {world.player.y += if world.player.y == world.height as u16 {0} else {1};}
+			201..=300 => {world.player.x -= if world.player.x == 0 {0} else {1};}
+			301..=400 => {world.player.x += if world.player.y == world.width as u16 {0} else {1};}
 			666 => plants::plant_plant(world, 10, 10),
 			_ => {},
 		}
@@ -107,19 +108,19 @@ impl <R: Read, W: Write> UI<R, W> {
 
 	fn update(&mut self, world: &mut World) -> bool{
 		let mut key_bytes = [0];
-        self.stdin.read(&mut key_bytes).unwrap();
+    self.stdin.read(&mut key_bytes).unwrap();
 		self.clear_player(world);
-        match key_bytes[0] {
-            b'q' => return false,
-            //b'k' | b'w' => {world.player.y -= if world.player.y == 0 {0} else {1};}// Any way to avoid this repetition?
-            //b'j' | b's' => {world.player.y += if world.player.y == world.height as u16 {0} else {1};}
-            //b'h' | b'a' => {world.player.x -= if world.player.x == 0 {0} else {1};}
-            //b'l' | b'd' => {world.player.x += if world.player.y == world.width as u16 {0} else {1};}
-			//b'f' => plants::plant_plant(world, 10, 10),
-            _ => {},
-        }
+		match key_bytes[0] {
+			b'q' => return false,
+			b'k' | b'w' => {world.player.y -= if world.player.y == 0 {0} else {1};}// Any way to avoid this repetition?
+			b'j' | b's' => {world.player.y += if world.player.y == world.height as u16 {0} else {1};}
+			b'h' | b'a' => {world.player.x -= if world.player.x == 0 {0} else {1};}
+			b'l' | b'd' => {world.player.x += if world.player.y == world.width as u16 {0} else {1};}
+			b'f' => plants::plant_plant(world, 10, 10),
+			_ => {},
+		}
 		self.draw_map(world);
-		self.move_player_and_plant(world);
+		//self.move_player_and_plant(world);
 		self.draw_player(world);
 		self.draw_debug(world);
 		let delay = std::time::Duration::from_millis(30); // The player should update fast and the rest of the world slow. How to do this?
@@ -128,7 +129,7 @@ impl <R: Read, W: Write> UI<R, W> {
 	}
 }
 
-fn start_game(width: usize, height: usize, world: &mut World) {
+fn run_game(width: usize, height: usize, world: &mut World) {
 	let stdout = stdout();
 	let stdout = stdout.lock().into_raw_mode().unwrap();
 	let stdin = async_stdin();
@@ -140,12 +141,12 @@ fn start_game(width: usize, height: usize, world: &mut World) {
 		stdout,
 	};
 	ui.reset(world);
-	ui.start(world);
+	ui.run(world);
 }
 
 fn main() {
 	let size: (u16, u16) = termion::terminal_size().unwrap();
 	let mut world = world::init_world(size.0 as usize, size.1 as usize);
-	start_game(size.0 as usize, size.1 as usize, &mut world);
+	run_game(size.0 as usize, size.1 as usize, &mut world);
 }
 

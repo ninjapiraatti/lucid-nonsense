@@ -17,8 +17,8 @@ pub struct Glyph {
 
 #[derive(Clone, Debug)]
 pub struct World {
-    pub changes: Vec<(usize, usize)>,
-    pub map: Vec<Vec<Glyph>>,
+	pub changes: Vec<(usize, usize)>,
+	pub map: Vec<Vec<Glyph>>,
 	pub plants: Vec<plants::Plant>,
 	pub width: usize,
 	pub height: usize, 
@@ -34,6 +34,7 @@ impl World {
 			plants::grow_plant(self, p);
 		}
 	}
+
 	pub fn update_world(&mut self) {
 		self.changes = vec![(0,0)];
 		self.grow_plants();
