@@ -121,6 +121,7 @@ impl <R: Read, W: Write> UI<R, W> {
 			b'g' => buildings.push(buildings::Building::new(world.player.x as usize, world.player.y as usize, 12, 8, 5)),
 			_ => {},
 		}
+
 		self.draw_map(world);
 		//self.move_player_and_plant(world);
 		self.draw_player(world);
@@ -142,6 +143,7 @@ fn run_game(width: usize, height: usize, world: &mut World, buildings: &mut Vec<
 		stdin,
 		stdout,
 	};
+	// TODO: separate UI from game logic
 	ui.reset(world);
 	ui.run(world, buildings);
 }
