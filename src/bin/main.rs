@@ -7,6 +7,7 @@ use std::thread;
 use nonsense::{self, world::World}; // That is the name of the library of this program
 use nonsense::world;
 use nonsense::plants;
+use nonsense::buildings;
 mod graphics {
 	pub const PLAYER: char = '♥';
 }
@@ -23,11 +24,11 @@ pub struct UI<R, W> {
 }
 
 impl <R: Read, W: Write> UI<R, W> {
-	fn run(&mut self, world: &mut World) {
+	fn run(&mut self, world: &mut World, buildings: &mut Vec<buildings::Building>) {
 		write!(self.stdout, "{}", cursor::Hide).unwrap();
 		self.reset(world);
 		loop {
-			if !self.update(world) {
+			if !self.update(world, buildings) {
 				return;
       }
 			write!(self.stdout, "{}", style::Reset).unwrap();
@@ -60,12 +61,11 @@ impl <R: Read, W: Write> UI<R, W> {
 	}
 
 	fn draw_debug(&mut self, world: &mut World) {
-		write!(self.stdout, "{}{}{}{:?} {:?}\n{:?}\n{:?}{}", 
+		write!(self.stdout, "{}{}{}{:?} {:?}\n{:?}\n{}", 
 		termion::color::Fg(color::Rgb(50,50,50)),
 		termion::color::Bg(color::Rgb(1,5,5)), 
 		cursor::Goto(2, 2 as u16),
 		world.changes.len(),
-		world.plants.len(),
 		world.debugstr,
 		world.debugint,
 		termion::color::Bg(color::Reset))
@@ -77,7 +77,8 @@ impl <R: Read, W: Write> UI<R, W> {
 		for val in 0..world.changes.len() {
 			let x = world.changes[val].0;
 			let y = world.changes[val].1;
-			self.draw_character(world.map[y][x].ch, world.map[y][x].color, (x + 1) as u16, (y + 1) as u16);	
+			self.draw_character(world.map[y][x].ch, world.map[y][x].color, (x + 1) as u16, (y + 1) as u16);
+			//world.debugstr = format!("Drawing {}", world.map[y][x].ch);
 		}
 	}
 
@@ -106,7 +107,7 @@ impl <R: Read, W: Write> UI<R, W> {
 		}
 	}
 
-	fn update(&mut self, world: &mut World) -> bool{
+	fn update(&mut self, world: &mut World, buildings: &mut Vec<buildings::Building>) -> bool{
 		let mut key_bytes = [0];
     self.stdin.read(&mut key_bytes).unwrap();
 		self.clear_player(world);
@@ -117,6 +118,7 @@ impl <R: Read, W: Write> UI<R, W> {
 			b'h' | b'a' => {world.player.x -= if world.player.x == 0 {0} else {1};}
 			b'l' | b'd' => {world.player.x += if world.player.y == world.width as u16 {0} else {1};}
 			b'f' => plants::plant_plant(world, 10, 10),
+			b'g' => buildings.push(buildings::Building::new(world.player.x as usize, world.player.y as usize, 12, 8, 5)),
 			_ => {},
 		}
 		self.draw_map(world);
@@ -129,7 +131,7 @@ impl <R: Read, W: Write> UI<R, W> {
 	}
 }
 
-fn run_game(width: usize, height: usize, world: &mut World) {
+fn run_game(width: usize, height: usize, world: &mut World, buildings: &mut Vec<buildings::Building>) {
 	let stdout = stdout();
 	let stdout = stdout.lock().into_raw_mode().unwrap();
 	let stdin = async_stdin();
@@ -141,12 +143,13 @@ fn run_game(width: usize, height: usize, world: &mut World) {
 		stdout,
 	};
 	ui.reset(world);
-	ui.run(world);
+	ui.run(world, buildings);
 }
 
 fn main() {
 	let size: (u16, u16) = termion::terminal_size().unwrap();
 	let mut world = world::init_world(size.0 as usize, size.1 as usize);
-	run_game(size.0 as usize, size.1 as usize, &mut world);
+	let mut buildings = buildings::init_buildings();
+	run_game(size.0 as usize, size.1 as usize, &mut world, &mut buildings);
 }
 

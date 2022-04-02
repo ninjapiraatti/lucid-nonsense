@@ -1,4 +1,5 @@
 use crate::plants;
+use crate::buildings;
 
 // Player
 #[derive(Clone, Debug)]
@@ -39,6 +40,7 @@ impl World {
 		self.changes = vec![(0,0)];
 		self.grow_plants();
 		plants::grow_grass(self);
+		//self.debugstr = format!("Changes len: {}", self.changes.len());
 	}
 }
 
