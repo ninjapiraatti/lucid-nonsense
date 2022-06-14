@@ -27,13 +27,13 @@ impl Building {
 		}
 	}
 
-	pub fn update(&mut self, world: &world::World) {
+	pub fn update(&mut self, world: &mut world::World) {
 		//world.debugstr = format!("Building drawn: {}", self.drawn);
 		if self.drawn == true {
 			return;
 		}
-		for y in 0..self.floors + self.height + 1 {
-			for x in 0..self.width + 1 {
+		for y in 0..self.floors + self.height {
+			for x in 0..self.width {
 				if x < world.width && y < world.height {
 					let b = get_glyph(x, y, self.floors, self.width, self.height);
 					self.map[y][x] = world::Glyph {
@@ -46,6 +46,7 @@ impl Building {
 			}
 		}
 		self.drawn = true;
+		world.entities.push(world::Entity::new(&self.map, self.x as u16, self.y as u16));
 		//world.debugstr = format!("Building at ({}, {}). Drawn: {}", self.x, self.y, self.drawn);
 	}
 }
@@ -84,4 +85,10 @@ fn get_glyph(x: usize, y: usize, floors: usize, width: usize, height: usize) -> 
 pub fn init_buildings() -> Vec<Building> {
 	let buildings = vec![];
 	buildings
+}
+
+pub fn new_building(world: &mut world::World, x: usize, y: usize) {
+	let mut building = Building::new(x, y, 3, 4, 8);
+	building.update(world);
+	//world.entities.push(world::Entity::new(&building.map, x as u16, y as u16));
 }
