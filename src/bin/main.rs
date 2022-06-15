@@ -37,13 +37,13 @@ impl <R: Read, W: Write> UI<R, W> {
 	}
 
 	fn clear_player(&mut self, world: &mut World) {
-		if world.map[(world.player.y - 1) as usize][(world.player.x - 1) as usize].z < world.player.y { // WTF
+		if world.map[(world.player.y - 1) as usize][(world.player.x - 1) as usize].z_index < world.player.y as i16 { // WTF
 			write!(self.stdout, "{} ", cursor::Goto(world.player.x, world.player.y)).unwrap();
 		}
 	}
 
 	fn draw_player(&mut self, world: &mut World) {
-		if world.map[(world.player.y - 1) as usize][(world.player.x - 1) as usize].z < world.player.y {
+		if world.map[(world.player.y - 1) as usize][(world.player.x - 1) as usize].z_index < world.player.y as i16 {
 			self.draw_character(PLAYER as char, termion::color::Rgb(240,160,0), world.player.x, world.player.y);
 		}
 	}
@@ -78,7 +78,7 @@ impl <R: Read, W: Write> UI<R, W> {
 			let x = world.changes[val].0;
 			let y = world.changes[val].1;
 			self.draw_character(world.map[y][x].ch, world.map[y][x].color, (x + 1) as u16, (y + 1) as u16);
-			//world.debugstr = format!("Drawing {}", world.map[y][x].ch);
+			//world.debugstr = format!("Drawing {}", world.map[y][x].z_index);
 		}
 	}
 

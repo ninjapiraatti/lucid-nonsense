@@ -15,7 +15,7 @@ pub struct Building {
 
 impl Building {
 	pub fn new(x: usize, y: usize, floors: usize, width: usize, height: usize) -> Building {
-		let brick = world::Glyph {ch: '.', color: termion::color::Rgb(15, 15, 15), permissions: 0, z: 0};
+		let brick = world::Glyph {ch: '.', color: termion::color::Rgb(15, 15, 15), permissions: 0, z_index: 0};
 		Building {
 			map: vec![vec![brick; width]; floors + height],
 			x,
@@ -40,14 +40,14 @@ impl Building {
 						ch: b,
 						color: termion::color::Rgb(255, 38, 106),
 						permissions: 1,
-						z: 1,
+						z_index: self.y as i16,
 					};
 				}
 			}
 		}
 		self.drawn = true;
 		world.entities.push(world::Entity::new(&self.map, self.x as u16, self.y as u16));
-		//world.debugstr = format!("Building at ({}, {}). Drawn: {}", self.x, self.y, self.drawn);
+		world.debugstr = format!("Building at ({}, {}). Drawn: {}", self.x, self.y, self.drawn);
 	}
 }
 
@@ -56,18 +56,18 @@ fn get_glyph(x: usize, y: usize, floors: usize, width: usize, height: usize) -> 
 		if x == 0 {
 			return crate::CHARS_TOPLEFT.chars().nth(rng::rng(crate::CHARS_TOPLEFT.chars().count())).unwrap();
 		}
-		if x == width {
+		if x == width-1 {
 			return crate::CHARS_TOPRIGHT.chars().nth(rng::rng(crate::CHARS_TOPRIGHT.chars().count())).unwrap();
 		}
 		return crate::CHARS_HRZ.chars().nth(rng::rng(crate::CHARS_HRZ.chars().count())).unwrap();
 	}
-	if y == floors {
+	if y == floors-1 {
 		if x == 0 || x == width {
 			return crate::CHARS_VRT.chars().nth(rng::rng(crate::CHARS_VRT.chars().count())).unwrap();
 		}
 		return crate::CHARS_HRZ.chars().nth(rng::rng(crate::CHARS_HRZ.chars().count())).unwrap();
 	}
-	if y == floors + height {
+	if y == floors + height-1 {
 		if x == 0 {
 			return crate::CHARS_BOTTOMLEFT.chars().nth(rng::rng(crate::CHARS_BOTTOMLEFT.chars().count())).unwrap();
 		}
@@ -76,7 +76,7 @@ fn get_glyph(x: usize, y: usize, floors: usize, width: usize, height: usize) -> 
 		}
 		return crate::CHARS_HRZ.chars().nth(rng::rng(crate::CHARS_HRZ.chars().count())).unwrap();
 	}
-	if x == 0 || x == width {
+	if x == 0 || x == width-1 {
 		return crate::CHARS_VRT.chars().nth(rng::rng(crate::CHARS_VRT.chars().count())).unwrap();
 	}
 	return crate::CHARS_FILL.chars().nth(rng::rng(crate::CHARS_FILL.chars().count())).unwrap();

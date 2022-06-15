@@ -1,5 +1,6 @@
 use crate::plants;
 use crate::buildings;
+use std::cmp::Reverse;
 
 // Player
 #[derive(Clone, Debug)]
@@ -13,7 +14,7 @@ pub struct Glyph {
 	pub ch: char,
 	pub color: termion::color::Rgb,
 	pub permissions: usize,
-	pub z: u16,
+	pub z_index: i16,
 }
 
 #[derive(Clone, Debug)]
@@ -25,6 +26,7 @@ pub struct Entity {
 	pub y: u16,
 	pub wants_update: bool,
 	pub draw: bool,
+	pub z_index: i16,
 }
 
 #[derive(Clone, Debug)]
@@ -50,6 +52,7 @@ impl World {
 
 	pub fn update_world(&mut self) {
 		self.changes = vec![(0,0)];
+		//self.check_graphics_overlap();
 		self.draw_graphics();
 		self.grow_plants();
 		plants::grow_grass(self);
@@ -58,17 +61,39 @@ impl World {
 
 
 	pub fn draw_graphics(&mut self) {
+		self.entities.sort_by_key(|e| Reverse(e.z_index.clone()));
 		for g in 0..self.entities.len() {
 			if self.entities[g].wants_update == true {
 				for y in 0..self.entities[g].glyphmap.len() {
 					for x in 0..self.entities[g].glyphmap[y].len() {
+						if self.entities[g].z_index <= self.map[self.entities[g].y as usize + y][self.entities[g].x as usize + x].z_index {
+							break;
+						}
 						self.map[self.entities[g].y as usize + y][self.entities[g].x as usize + x] = self.entities[g].glyphmap[y][x];
 						self.changes.push((self.entities[g].x as usize + x, self.entities[g].y as usize + y));
+						self.entities[g].wants_update = false;
+						self.debugstr = format!("{}{}", "map at player: ", self.map[self.player.y as usize][self.player.x as usize].z_index);
+						//self.debugstr = format!("{}{}{}{}{}{}{}", "x:", x, "y:", y, self.entities[g].z_index, " | ", self.map[self.entities[g].y as usize + y][self.entities[g].x as usize + x].z_index);
+						//self.debugstr = format!("x:{} y:{}", self.player.x, self.player.y);
 					}
 				}
 			}
 		}
 	}
+
+	/*
+	pub fn check_graphics_overlap(&mut self) {
+		for g in 0..self.entities.len() {
+			for y in 0..self.entities[g].glyphmap.len() {
+				for x in 0..self.entities[g].glyphmap[y].len() {
+					if self.map[self.entities[g].y as usize + y][self.entities[g].x as usize + x].z_index > self.entities[g].glyphmap[y][x].z_index {
+						self.entities[g].wants_update = true;
+					}
+				}
+			}
+		}
+	}
+	*/
 
 	pub fn update_debugstr(&mut self, str: String) {
 		self.debugstr = str;
@@ -76,7 +101,7 @@ impl World {
 }
 
 pub fn init_world(x: usize, y: usize) -> World {
-	let dot = Glyph {ch: '.', color: termion::color::Rgb(15, 15, 15), permissions: 0, z: 0};
+	let dot = Glyph {ch: '.', color: termion::color::Rgb(15, 15, 15), permissions: 0, z_index: 0};
 	World {
 		dot,
 		changes: vec![(0, 0)],
@@ -104,6 +129,7 @@ impl Entity {
 			y,
 			wants_update: true,
 			draw: true,
+			z_index: y as i16,
 		}
 	}
 }

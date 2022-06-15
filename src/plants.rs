@@ -55,7 +55,7 @@ pub fn grow_plant(world: &mut world::World, p: usize){
 			let y = y as usize;
 			world.changes.push((x, y));
 			world.map[y][x].ch = trunk;
-			world.map[y][x].z = world.plants[p].y;
+			world.map[y][x].z_index = world.plants[p].y as i16;
 			world.map[y][x].permissions = 1;
 			world.map[y][x].color = termion::color::Rgb(255, 38, 106);
 			world.plants[p].trunkstate += 1;
