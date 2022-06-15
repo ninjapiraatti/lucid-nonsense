@@ -62,38 +62,22 @@ impl World {
 
 	pub fn draw_graphics(&mut self) {
 		self.entities.sort_by_key(|e| Reverse(e.z_index.clone()));
-		for g in 0..self.entities.len() {
-			if self.entities[g].wants_update == true {
-				for y in 0..self.entities[g].glyphmap.len() {
-					for x in 0..self.entities[g].glyphmap[y].len() {
-						if self.entities[g].z_index <= self.map[self.entities[g].y as usize + y][self.entities[g].x as usize + x].z_index {
+		for e in 0..self.entities.len() {
+			let entity = &self.entities[e];
+			if entity.wants_update == true {
+				for y in 0..entity.glyphmap.len() {
+					for x in 0..entity.glyphmap[y].len() {
+						if entity.z_index <= self.map[entity.y as usize + y][entity.x as usize + x].z_index {
 							break;
 						}
-						self.map[self.entities[g].y as usize + y][self.entities[g].x as usize + x] = self.entities[g].glyphmap[y][x];
-						self.changes.push((self.entities[g].x as usize + x, self.entities[g].y as usize + y));
-						self.entities[g].wants_update = false;
-						self.debugstr = format!("{}{}", "map at player: ", self.map[self.player.y as usize][self.player.x as usize].z_index);
-						//self.debugstr = format!("{}{}{}{}{}{}{}", "x:", x, "y:", y, self.entities[g].z_index, " | ", self.map[self.entities[g].y as usize + y][self.entities[g].x as usize + x].z_index);
-						//self.debugstr = format!("x:{} y:{}", self.player.x, self.player.y);
+						self.map[entity.y as usize + y][entity.x as usize + x] = entity.glyphmap[y][x];
+						self.changes.push((entity.x as usize + x, entity.y as usize + y));
 					}
 				}
+				self.entities[e].wants_update = false;
 			}
 		}
 	}
-
-	/*
-	pub fn check_graphics_overlap(&mut self) {
-		for g in 0..self.entities.len() {
-			for y in 0..self.entities[g].glyphmap.len() {
-				for x in 0..self.entities[g].glyphmap[y].len() {
-					if self.map[self.entities[g].y as usize + y][self.entities[g].x as usize + x].z_index > self.entities[g].glyphmap[y][x].z_index {
-						self.entities[g].wants_update = true;
-					}
-				}
-			}
-		}
-	}
-	*/
 
 	pub fn update_debugstr(&mut self, str: String) {
 		self.debugstr = str;
