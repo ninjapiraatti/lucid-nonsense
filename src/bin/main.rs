@@ -113,10 +113,10 @@ impl <R: Read, W: Write> UI<R, W> {
 		self.clear_player(world);
 		match key_bytes[0] {
 			b'q' => return false,
-			b'k' | b'w' => {world.player.y -= if world.player.y == 0 {0} else {1};}// Any way to avoid this repetition?
+			b'k' | b'w' => {world.player.y -= if world.player.y - 1 == 0 {0} else {1};}// Any way to avoid this repetition?
 			b'j' | b's' => {world.player.y += if world.player.y == world.height as u16 {0} else {1};}
-			b'h' | b'a' => {world.player.x -= if world.player.x == 0 {0} else {1};}
-			b'l' | b'd' => {world.player.x += if world.player.y == world.width as u16 {0} else {1};}
+			b'h' | b'a' => {world.player.x -= if world.player.x - 1 == 0 {0} else {1};}
+			b'l' | b'd' => {world.player.x += if world.player.y + 1 == world.width as u16 {0} else {1};}
 			b'f' => plants::plant_plant(world, 10, 10),
 			b'g' => buildings::new_building(world, world.player.x as usize, world.player.y as usize),
 			_ => {},

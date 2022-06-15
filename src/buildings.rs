@@ -67,7 +67,7 @@ fn get_glyph(x: usize, y: usize, floors: usize, width: usize, height: usize) -> 
 		}
 		return crate::CHARS_HRZ.chars().nth(rng::rng(crate::CHARS_HRZ.chars().count())).unwrap();
 	}
-	if y == floors + height-1 {
+	if y == floors + height {
 		if x == 0 {
 			return crate::CHARS_BOTTOMLEFT.chars().nth(rng::rng(crate::CHARS_BOTTOMLEFT.chars().count())).unwrap();
 		}
@@ -88,7 +88,7 @@ pub fn init_buildings() -> Vec<Building> {
 }
 
 pub fn new_building(world: &mut world::World, x: usize, y: usize) {
-	let mut building = Building::new(x, y, 3, 4, 8);
+	let mut building = Building::new(x, y, 3, 7, 4);
 	building.update(world);
 	//world.entities.push(world::Entity::new(&building.map, x as u16, y as u16));
 }

@@ -67,6 +67,9 @@ impl World {
 			if entity.wants_update == true {
 				for y in 0..entity.glyphmap.len() {
 					for x in 0..entity.glyphmap[y].len() {
+						if entity.y as usize + y >= self.height || entity.x as usize + x >= self.width {
+							break;
+						}
 						if entity.z_index <= self.map[entity.y as usize + y][entity.x as usize + x].z_index {
 							break;
 						}
