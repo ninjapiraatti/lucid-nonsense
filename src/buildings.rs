@@ -78,8 +78,10 @@ fn get_glyph(x: usize, y: usize, floors: usize, width: usize, height: usize) -> 
 	}
 	if x == 0 || x == width-1 {
 		return crate::CHARS_VRT.chars().nth(rng::rng(crate::CHARS_VRT.chars().count())).unwrap();
+	} else if y < floors {
+		return crate::CHARS_ROOF.chars().nth(rng::rng(crate::CHARS_ROOF.chars().count())).unwrap();
 	}
-	return crate::CHARS_FILL.chars().nth(rng::rng(crate::CHARS_FILL.chars().count())).unwrap();
+	return crate::CHARS_WALL.chars().nth(rng::rng(crate::CHARS_WALL.chars().count())).unwrap();
 }
 
 pub fn init_buildings() -> Vec<Building> {

@@ -14,7 +14,8 @@ lazy_static::lazy_static! {
 	static ref CHARS_BOTTOMRIGHT: String = String::from("╝╜╛┘");
 	static ref CHARS_TOPHRZ: String = String::from("▓█▀");
 	static ref CHARS_BOTTOMHRZ: String = String::from("▓█_▄");
-	static ref CHARS_FILL: String = String::from("░▒▓█");
+	static ref CHARS_WALL: String = String::from("░▒▓█");
+	static ref CHARS_ROOF: String = String::from("░.,'ºª°∙·");
 	static ref CHARS_RND: String = String::from("ÇêëèôöÖóúªº¿ßσµΦΘΩδ∞°²☺☻♥♦♣♠•○♂♀☼%0@");
 	static ref SIZE: (u16, u16) = termion::terminal_size().unwrap();
 }
