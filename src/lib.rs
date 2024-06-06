@@ -1,7 +1,6 @@
 pub mod rng;
 pub mod world;
 pub mod plants;
-pub mod utils;
 pub mod buildings;
 
 lazy_static::lazy_static! {

@@ -1,6 +1,5 @@
 use crate::world;
 use crate::rng;
-use crate::utils;
 
 #[derive(Clone, Debug)]
 pub struct Building {

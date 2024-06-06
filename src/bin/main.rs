@@ -1,5 +1,4 @@
 extern crate termion;
-use nonsense::rng;
 use termion::{color, async_stdin, cursor, style};
 use termion::raw::IntoRawMode;
 use std::io::{Read, Write, stdout}; // Add stdin if you need to switch away from async_stdin
@@ -48,6 +47,7 @@ impl <R: Read, W: Write> UI<R, W> {
 		}
 	}
 
+	/*
 	fn move_player_and_plant(&mut self, world: &mut World) {
 		let rnd = rng::rng(1000);
 		match rnd {
@@ -59,6 +59,7 @@ impl <R: Read, W: Write> UI<R, W> {
 			_ => {},
 		}
 	}
+	*/
 
 	fn draw_debug(&mut self, world: &mut World) {
 		write!(self.stdout, "{}{}{}{:?} {:?}\n{:?}\n{}", 

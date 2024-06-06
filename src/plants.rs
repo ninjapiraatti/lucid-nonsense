@@ -45,7 +45,6 @@ pub fn plant_plant(world: &mut world::World, height: u16, width: u16) {
 pub fn grow_plant(world: &mut world::World, p: usize){
 	let trunk = crate::CHARS_VRT.chars().nth(rng::rng(crate::CHARS_VRT.chars().count())).unwrap();
 	let branch = crate::CHARS_HRZ.chars().nth(rng::rng(crate::CHARS_HRZ.chars().count())).unwrap();
-	let leaf = crate::CHARS_RND.chars().nth(rng::rng(crate::CHARS_RND.chars().count())).unwrap();
 	let rnd = rng::rng(100);
 	if world.plants[p].trunkstate < world.plants[p].height { // This is hecking stupid. world.plants[p] -> something shorter
 		let x: i32 = world.plants[p].x as i32;
