@@ -4,7 +4,7 @@ use termion::raw::IntoRawMode;
 use std::io::{Read, Write, stdout}; // Add stdin if you need to switch away from async_stdin
 use std::thread;
 use nonsense::{self, world::World}; // That is the name of the library of this program
-use nonsense::world;
+use nonsense::{creature, world};
 use nonsense::plants;
 use nonsense::buildings;
 mod graphics {
@@ -120,6 +120,7 @@ impl <R: Read, W: Write> UI<R, W> {
 			b'l' | b'd' => {world.player.x += if world.player.x == world.width as u16 {0} else {1};}
 			b'f' => plants::plant_plant(world, 10, 10),
 			b'g' => buildings::new_building(world, world.player.x as usize, world.player.y as usize),
+			b'x' => creature::spawn_creature(world),
 			_ => {},
 		}
 
