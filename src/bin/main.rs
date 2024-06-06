@@ -14,7 +14,7 @@ mod graphics {
 use self::graphics::*;
 
 // The UI state.
-pub struct UI<R, W> {
+pub struct UI<R: Read, W: Write> {
 	width: usize,
 	height: usize,
 	/// Standard input.
@@ -129,6 +129,13 @@ impl <R: Read, W: Write> UI<R, W> {
 		let delay = std::time::Duration::from_millis(30); // The player should update fast and the rest of the world slow. How to do this?
 		thread::sleep(delay);
 		true
+	}
+}
+
+impl<R: Read, W: Write> Drop for UI<R, W> {
+	fn drop(&mut self) {
+			write!(self.stdout, "{}{}", cursor::Show, style::Reset).unwrap();
+			self.stdout.flush().unwrap();
 	}
 }
 
