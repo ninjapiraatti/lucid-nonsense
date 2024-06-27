@@ -3,6 +3,7 @@ use std::cmp::Reverse;
 use std::any::Any;
 use std::cell::RefCell;
 use std::rc::Rc;
+use rand::prelude::*;
 
 // Player
 #[derive(Clone, Debug)]
@@ -64,16 +65,15 @@ impl Entity {
 
         // Clear the old position
         world.map[self.y as usize][self.x as usize] = world.dot;
-        world.changes.push((self.x as usize, self.y as usize));
-
+				
         // Update the position
         self.x = new_x;
         self.y = new_y;
-
+				
         // Update the world map with the new position
-        //world.map[self.y as usize][self.x as usize] = self.glyphmap[0][0];
+        world.map[self.y as usize][self.x as usize] = self.glyphmap[0][0];
+        world.changes.push((self.x as usize, self.y as usize));
 				self.wants_update = true;
-				println!("Entity moved to position: ({}, {})", self.x, self.y);
     }
 }
 
@@ -103,6 +103,7 @@ impl World {
 		//self.check_graphics_overlap();
 		self.draw_graphics();
 		self.grow_plants();
+		self.update_entities();
 		plants::grow_grass(self);
 		//self.debugstr = format!("Changes len: {}", self.changes.len());
 	}
@@ -137,7 +138,20 @@ impl World {
 			}
 		}
 		for entity in entities_to_move {
-			entity.borrow_mut().move_entity(10, 0, self); // Example: move entity to the right
+			// give me random direction here and move the creature by 1 block in that direction
+			let direction_x = rand::thread_rng().gen_range(0..2);
+			let dx = match direction_x {
+				0 => -1,
+				1 => 1,
+				_ => 0,
+			};
+			let direction_y = rand::thread_rng().gen_range(0..2);
+			let dy = match direction_y {
+				0 => -1,
+				1 => 1,
+				_ => 0,
+			};
+			entity.borrow_mut().move_entity(dx, dy, self); // Example: move entity to the right
 		}
 	}
 

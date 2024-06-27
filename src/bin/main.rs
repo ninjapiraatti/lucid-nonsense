@@ -121,7 +121,7 @@ impl <R: Read, W: Write> UI<R, W> {
 			b'f' => plants::plant_plant(world, 10, 10),
 			b'g' => buildings::new_building(world, world.player.x as usize, world.player.y as usize),
 			b'x' => creature::spawn_creature(world),
-			b'm' => world.update_entities(), // Call the new method here
+			//b'm' => world.update_entities(), // Call the new method here
 			_ => {},
 		}
 

@@ -17,3 +17,4 @@ path = "src/bin/main.rs"
 [dependencies]
 lazy_static = "1.4.0"
 termion = "4.0.0"
+rand = "0.8.5"
