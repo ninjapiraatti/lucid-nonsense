@@ -114,18 +114,18 @@ impl <R: Read, W: Write> UI<R, W> {
 		self.clear_player(world);
 		match key_bytes[0] {
 			b'q' => return false,
-			b'k' | b'w' => {world.player.y -= if world.player.y - 1 == 0 {0} else {1};}// Any way to avoid this repetition?
-			b'j' | b's' => {world.player.y += if world.player.y == world.height as u16 {0} else {1};}
-			b'h' | b'a' => {world.player.x -= if world.player.x - 1 == 0 {0} else {1};}
-			b'l' | b'd' => {world.player.x += if world.player.x == world.width as u16 {0} else {1};}
+			b'k' | b'w' => { world.player.y -= if world.player.y - 1 == 0 { 0 } else { 1 }; }
+			b'j' | b's' => { world.player.y += if world.player.y == world.height as u16 { 0 } else { 1 }; }
+			b'h' | b'a' => { world.player.x -= if world.player.x - 1 == 0 { 0 } else { 1 }; }
+			b'l' | b'd' => { world.player.x += if world.player.x == world.width as u16 { 0 } else { 1 }; }
 			b'f' => plants::plant_plant(world, 10, 10),
 			b'g' => buildings::new_building(world, world.player.x as usize, world.player.y as usize),
 			b'x' => creature::spawn_creature(world),
+			b'm' => world.update_entities(), // Call the new method here
 			_ => {},
 		}
 
 		self.draw_map(world);
-		//self.move_player_and_plant(world);
 		self.draw_player(world);
 		self.draw_debug(world);
 		let delay = std::time::Duration::from_millis(30); // The player should update fast and the rest of the world slow. How to do this?
@@ -162,4 +162,3 @@ fn main() {
 	let mut world = world::init_world(size.0 as usize, size.1 as usize);
 	run_game(size.0 as usize, size.1 as usize, &mut world);
 }
-

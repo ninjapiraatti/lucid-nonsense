@@ -19,6 +19,6 @@ impl Creature {
 }
 
 pub fn spawn_creature(world: &mut world::World) {
-  let creature = Creature::new((world.width / 2) as u16, (world.height / 2) as u16);
-  world.entities.push(world::Entity::new(&creature.map, creature.x, creature.y));
+    let creature = Creature::new((world.width / 2) as u16, (world.height / 2) as u16);
+    world.entities.push(world::Entity::new(&creature.map, creature.x, creature.y));
 }
